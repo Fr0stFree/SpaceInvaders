@@ -1,26 +1,22 @@
 import pygame, sys
+
+import settings
 from player import Player
 
-
-FPS = 60
-WIDTH = 800
-HEIGHT = 600
-SCREEN_COLOR = (30, 30, 30)
-
+PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
 
 class Game:
     def __init__(self):
-        player_sprite = Player((WIDTH//2, HEIGHT))
-        self.player = pygame.sprite.GroupSingle(player_sprite)
+        self.player = pygame.sprite.GroupSingle(Player(PLAYER_START_POSITION, 3))
 
     def run(self):
         self.player.update()
-        self.player.draw(screen)
+        self.player.draw(screen)  
 
 
 if __name__ == '__main__':
     pygame.init()
-    screen = pygame.display.set_mode(WIDTH, HEIGHT)
+    screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
     clock = pygame.time.Clock()
     game = Game()
 
@@ -30,8 +26,8 @@ if __name__ == '__main__':
                 pygame.quit()
                 sys.exit()
 
-        screen.fill(SCREEN_COLOR)
+        screen.fill(settings.SCREEN_COLOR)
         game.run()
 
         pygame.display.flip()
-        clock.tick(FPS)
+        clock.tick(settings.FPS)
