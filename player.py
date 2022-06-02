@@ -1,19 +1,28 @@
 import pygame
 import os
 
-import settings 
+import settings
+from missile import Missile
 
+
+PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
+PLAYER_SPEED = 3
+PLAYER_SIZE = (52,48)
+MISSILE_SPEED = 6
+RECOIL_COOLDOWN = 1600
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position, speed):
+    def __init__(self):
         super().__init__()
         loaded_image = pygame.image.load(os.path.join('graphics', 'player_ship.png')).convert_alpha()
-        self.image = pygame.transform.scale(loaded_image, (52, 48))
-        self.rect = self.image.get_rect(midbottom=position)
-        self.speed = speed
+        self.image = pygame.transform.scale(loaded_image, PLAYER_SIZE)
+        self.rect = self.image.get_rect(midbottom=PLAYER_START_POSITION)
+        self.speed = PLAYER_SPEED
         self.guns_ready = True
         self.recoil_time = 0
-        self.recoil_cooldown = 1600
+        self.recoil_cooldown = RECOIL_COOLDOWN
+        
+        self.missiles = pygame.sprite.Group()
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -38,7 +47,7 @@ class Player(pygame.sprite.Sprite):
                 self.guns_ready = True
 
     def gunfire(self):
-        print('piy-piy')
+        self.missiles.add(Missile(position=self.rect.center, speed=MISSILE_SPEED))
 
     def constraint(self):
         if self.rect.right >= settings.WIDTH:
@@ -54,3 +63,4 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.constraint()
         self.recoil()
+        self.missiles.update()

@@ -5,17 +5,15 @@ import settings
 from player import Player
 
 
-PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
-PLAYER_SPEED = 3
-
-
 class Game:
     def __init__(self):
-        self.player = pygame.sprite.GroupSingle(Player(position=PLAYER_START_POSITION, speed=PLAYER_SPEED))
+        self.player = pygame.sprite.GroupSingle(Player())
 
     def run(self):
         self.player.update()
-        self.player.draw(screen)  
+
+        self.player.draw(screen)
+        self.player.sprite.missiles.draw(screen)
 
 
 if __name__ == '__main__':
