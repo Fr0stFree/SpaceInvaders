@@ -1,13 +1,17 @@
-import pygame, sys
+import sys
+import pygame
 
 import settings
 from player import Player
 
+
 PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
+PLAYER_SPEED = 3
+
 
 class Game:
     def __init__(self):
-        self.player = pygame.sprite.GroupSingle(Player(PLAYER_START_POSITION, 3))
+        self.player = pygame.sprite.GroupSingle(Player(position=PLAYER_START_POSITION, speed=PLAYER_SPEED))
 
     def run(self):
         self.player.update()
