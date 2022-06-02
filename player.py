@@ -8,7 +8,9 @@ from missile import Missile
 PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
 PLAYER_SPEED = 3
 PLAYER_SIZE = (52,48)
-MISSILE_SPEED = 6
+
+MISSILE_SPEED = 2
+MISSILE_ACCELERATION = 0.15
 RECOIL_COOLDOWN = 1600
 
 class Player(pygame.sprite.Sprite):
@@ -47,7 +49,13 @@ class Player(pygame.sprite.Sprite):
                 self.guns_ready = True
 
     def gunfire(self):
-        self.missiles.add(Missile(position=self.rect.center, speed=MISSILE_SPEED))
+        self.missiles.add(
+            Missile(
+                position=self.rect.center,
+                start_speed=MISSILE_SPEED,
+                acceleration=MISSILE_ACCELERATION,
+            )
+        )
 
     def constraint(self):
         if self.rect.right >= settings.WIDTH:
