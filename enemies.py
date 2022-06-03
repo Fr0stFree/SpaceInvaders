@@ -12,12 +12,27 @@ ENEMY_STEP_SIZE = 5
 ENEMY_X_GAP = 65
 ENEMY_Y_GAP = 50
 ENEMY_X_OFFSET = 50
-ENEMY_Y_OFFSET = 50
+ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
 ENEMY_COLUMNS = 10
 
-EXTRA_ENEMY_SIZE = ...
-EXTRA_ENEMY_SPEED = ...
+EXTRA_ENEMY_SIZE = (68, 32)
+EXTRA_ENEMY_SPEED = 3
+EXTRA_ENEMY_START_POSITION = (settings.WIDTH//20, settings.HEIGHT//20)
+
+class ExtraEnemy(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        loaded_image = pygame.image.load(os.path.join('graphics', 'extra_enemy.png')).convert_alpha()
+        self.image = pygame.transform.scale(loaded_image, EXTRA_ENEMY_SIZE)
+        self.rect = self.image.get_rect(center=EXTRA_ENEMY_START_POSITION)
+        self.speed = EXTRA_ENEMY_SPEED        
+    
+    def update(self):
+        self.rect.x += self.speed
+        # if self.rect.x > settings.WIDTH:
+        #     self.kill()
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, position):
@@ -30,16 +45,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x += self.speed
-
-
-class ExtraEnemy(pygame.sprite.Sprite):
-    def __init__(self, position):
-        super().__init__()
-        loaded_image = ... # pygame.image.load(os.path.join('graphics', 'enemy_ship.png')).convert_alpha()
-        self.image = pygame.transform.scale(loaded_image, EXTRA_ENEMY_SIZE)
-        self.rect = self.image.get_rect(center=position)
-        self.speed = EXTRA_ENEMY_SPEED        
-
 
 def setup_enemies(group):
     for i, row in enumerate(range(ENEMY_ROWS)):

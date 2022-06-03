@@ -3,7 +3,7 @@ import pygame
 
 import settings
 from player import Player
-from enemy import setup_enemies, enemy_movement, enemy_gunfire
+from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
 
 
 ENEMY_GUNFIRE_RATE = 300
@@ -16,19 +16,25 @@ class Game:
         self.enemies = pygame.sprite.Group()
         setup_enemies(self.enemies)
         self.lasers = pygame.sprite.Group()
+        
+        self.extra_enemy = pygame.sprite.GroupSingle(ExtraEnemy())
 
 
     def run(self):
         self.player.update()
-
-        self.enemies.update()
-        enemy_movement(self.enemies.sprites())
-        self.lasers.update()
-
         self.player.draw(screen)
         self.player.sprite.missiles.draw(screen)
+        
+        self.extra_enemy.update()
+        self.extra_enemy.draw(screen)
+
+        self.enemies.update()
         self.enemies.draw(screen)
+        enemy_movement(self.enemies.sprites())
+        self.lasers.update()
         self.lasers.draw(screen)
+
+        
 
 
 if __name__ == '__main__':
