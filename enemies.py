@@ -15,6 +15,8 @@ ENEMY_X_OFFSET = 50
 ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
 ENEMY_COLUMNS = 10
+ENEMY_LASER_SPEED = 2
+ENEMY_LASER_ACCELERATION = 0.1
 
 EXTRA_ENEMY_SIZE = (68, 32)
 EXTRA_ENEMY_SPEED = 3
@@ -67,7 +69,7 @@ def enemy_gunfire(enemies, lasers):
     random_enemy = choice(enemies)
     laser_sprite = Laser(
         position=random_enemy.rect.center,
-        start_speed=1,
-        acceleration=0.1
+        start_speed=ENEMY_LASER_SPEED,
+        acceleration=ENEMY_LASER_ACCELERATION,
     )
     lasers.add(laser_sprite)
