@@ -2,7 +2,7 @@ import os
 import pygame
 from random import choice
 
-from laser import Laser
+from weapons import Projectile, Beam
 import settings
 
 
@@ -15,12 +15,14 @@ ENEMY_X_OFFSET = 50
 ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
 ENEMY_COLUMNS = 10
-ENEMY_LASER_SPEED = 2
-ENEMY_LASER_ACCELERATION = 0.1
+ENEMY_LASER_SPEED = -2
+ENEMY_LASER_ACCELERATION = -0.1
+ENEMY_LASER_SIZE = (6, 25)
 
 EXTRA_ENEMY_SIZE = (68, 32)
 EXTRA_ENEMY_SPEED = 3
-EXTRA_ENEMY_START_POSITION = (settings.WIDTH//20, settings.HEIGHT//20)
+EXTRA_ENEMY_START_POSITION = (-settings.WIDTH//20, settings.HEIGHT//20)
+BEAM_RECOIL_TIME = 4500
 
 class ExtraEnemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -28,12 +30,41 @@ class ExtraEnemy(pygame.sprite.Sprite):
         loaded_image = pygame.image.load(os.path.join('graphics', 'extra_enemy.png')).convert_alpha()
         self.image = pygame.transform.scale(loaded_image, EXTRA_ENEMY_SIZE)
         self.rect = self.image.get_rect(center=EXTRA_ENEMY_START_POSITION)
-        self.speed = EXTRA_ENEMY_SPEED        
-    
+        self.speed = EXTRA_ENEMY_SPEED 
+        
+        self.guns_ready = True
+        self.recoil_time = 0  
+        self.beam_reload = BEAM_RECOIL_TIME
+        self.beams = pygame.sprite.Group()
+
     def update(self):
+        self.movement()
+        self.gunfire()
+        self.recoil()
+        self.beams.update()
+
+    def movement(self):
         self.rect.x += self.speed
-        # if self.rect.x > settings.WIDTH:
-        #     self.kill()
+        if self.rect.right > 1.1*settings.WIDTH or self.rect.left < -settings.WIDTH//10:
+            self.speed *= -1
+
+    def gunfire(self):
+        if self.guns_ready:
+            self.beams.add(
+                Beam(
+                    path='laser_beam.png',
+                    position=self.rect.center,
+                    speed=self.speed,
+                )
+            )
+            self.guns_ready = False
+            self.recoil_time = pygame.time.get_ticks()
+    
+    def recoil(self):
+        if not self.guns_ready:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.recoil_time >= self.beam_reload:
+                self.guns_ready = True
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -67,9 +98,11 @@ def enemy_movement(enemies):
 
 def enemy_gunfire(enemies, lasers):
     random_enemy = choice(enemies)
-    laser_sprite = Laser(
+    laser_sprite = Projectile(
+        path='enemy_laser.png',
         position=random_enemy.rect.center,
         start_speed=ENEMY_LASER_SPEED,
         acceleration=ENEMY_LASER_ACCELERATION,
+        size=ENEMY_LASER_SIZE,
     )
     lasers.add(laser_sprite)

@@ -7,27 +7,40 @@ from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
 
 
 ENEMY_GUNFIRE_RATE = 300
-
+EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
 class Game:
     def __init__(self):
         self.player = pygame.sprite.GroupSingle(Player())
 
+        self.extra_enemy = pygame.sprite.GroupSingle()
+        self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
+
         self.enemies = pygame.sprite.Group()
         setup_enemies(self.enemies)
         self.lasers = pygame.sprite.Group()
         
-        self.extra_enemy = pygame.sprite.GroupSingle(ExtraEnemy())
-
+    def extra_enemy_appearance(self):
+        if not self.extra_enemy:
+            self.extra_enemy_spawn -= 1
+        if self.extra_enemy_spawn <= 0:
+            self.extra_enemy.add(ExtraEnemy())
+            self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
 
     def run(self):
+        #  Обновление игрока
         self.player.update()
         self.player.draw(screen)
         self.player.sprite.missiles.draw(screen)
         
-        self.extra_enemy.update()
-        self.extra_enemy.draw(screen)
+        #  Обновление специального противника
+        self.extra_enemy_appearance()
+        if self.extra_enemy:
+            self.extra_enemy.update()
+            self.extra_enemy.draw(screen)
+            self.extra_enemy.sprite.beams.draw(screen)
 
+        #  Обновление группы противников
         self.enemies.update()
         self.enemies.draw(screen)
         enemy_movement(self.enemies.sprites())
@@ -45,6 +58,9 @@ if __name__ == '__main__':
 
     ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
     pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
+    
+    EXTRA_ENEMY_APPEAR_EVENT = pygame.USEREVENT + 2
+    pygame.time.set_timer(EXTRA_ENEMY_APPEAR_EVENT, 7000)
 
     while True:
         for event in pygame.event.get():
@@ -54,6 +70,9 @@ if __name__ == '__main__':
             
             if event.type == ENEMY_GUNFIRE_EVENT:
                 enemy_gunfire(game.enemies.sprites(), game.lasers)
+
+            # if event.type == EXTRA_ENEMY_APPEAR_EVENT:
+            #     game.extra_enemy = pygame.sprite.GroupSingle(ExtraEnemy())
 
         screen.fill(settings.SCREEN_COLOR)
         game.run()
