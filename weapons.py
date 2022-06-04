@@ -4,6 +4,11 @@ import pygame
 import settings
 
 
+BEAM_DURATION = 1200
+BEAM_SIZE = (125, 800)
+BEAM_IMAGE = pygame.image.load(os.path.join('graphics', 'laser_beam.png'))
+
+
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, path, position, start_speed, acceleration, size):
         super().__init__()
@@ -24,13 +29,13 @@ class Projectile(pygame.sprite.Sprite):
 
 
 class Beam(pygame.sprite.Sprite):
-    def __init__(self, path, position, speed):
+    def __init__(self, position, speed):
         super().__init__()
-        self.image = pygame.image.load(os.path.join('graphics', path)).convert_alpha()
+        self.image = pygame.transform.scale(BEAM_IMAGE.convert_alpha(), BEAM_SIZE)
         self.rect = self.image.get_rect(center=position)
         self.speed = speed
         self.created = pygame.time.get_ticks()
-        self.duration = 1200
+        self.duration = BEAM_DURATION
         
     def update(self):
         self.destroy_sprite()

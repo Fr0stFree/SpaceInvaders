@@ -8,6 +8,7 @@ from weapons import Projectile
 PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
 PLAYER_SPEED = 3
 PLAYER_SIZE = (52,48)
+PLAYER_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 
 MISSILE_SPEED = 2
 MISSILE_SIZE = (10, 45)
@@ -18,8 +19,7 @@ RECOIL_COOLDOWN = 1600
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        loaded_image = pygame.image.load(os.path.join('graphics', 'player_ship.png')).convert_alpha()
-        self.image = pygame.transform.scale(loaded_image, PLAYER_SIZE)
+        self.image = pygame.transform.scale(PLAYER_IMAGE.convert_alpha(), PLAYER_SIZE)
         self.rect = self.image.get_rect(midbottom=PLAYER_START_POSITION)
         self.speed = PLAYER_SPEED
         self.guns_ready = True
@@ -66,8 +66,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = settings.WIDTH
         if self.rect.left <= 0:
             self.rect.left = 0
-        if self.rect.top <= settings.HEIGHT * 2 // 3:
-            self.rect.top = settings.HEIGHT * 2 // 3
+        if self.rect.top <= settings.HEIGHT // 2:
+            self.rect.top = settings.HEIGHT // 2
         if self.rect.bottom >= settings.HEIGHT:
             self.rect.bottom = settings.HEIGHT
 

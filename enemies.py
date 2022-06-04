@@ -6,6 +6,7 @@ from weapons import Projectile, Beam
 import settings
 
 
+ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
 ENEMY_SIZE = (60, 40)
 ENEMY_X_SPEED = 1
 ENEMY_Y_SPEED = 0
@@ -20,6 +21,7 @@ ENEMY_LASER_SPEED = -1
 ENEMY_LASER_ACCELERATION = -0.1
 ENEMY_LASER_SIZE = (6, 25)
 
+EXTRA_ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
 EXTRA_ENEMY_SIZE = (68, 32)
 EXTRA_ENEMY_SPEED = 3
 BEAM_RECOIL_TIME = 3500
@@ -32,18 +34,17 @@ EXTRA_ENEMY_START_POSITION = choice([
 class ExtraEnemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        loaded_image = pygame.image.load(os.path.join('graphics', 'extra_enemy.png')).convert_alpha()
-        self.image = pygame.transform.scale(loaded_image, EXTRA_ENEMY_SIZE)
+        self.image = pygame.transform.scale(EXTRA_ENEMY_IMAGE.convert_alpha(), EXTRA_ENEMY_SIZE)
         self.rect = self.image.get_rect(center=EXTRA_ENEMY_START_POSITION)
         self.speed = EXTRA_ENEMY_SPEED 
         
         self.guns_ready = False
         self.recoil_time = 0
         self.beam_reload = BEAM_RECOIL_TIME
-        self.beams = pygame.sprite.Group()
+        self.beam = pygame.sprite.GroupSingle()
 
     def update(self):
-        self.beams.update()
+        self.beam.update()
         self.gunfire()
         self.movement()
         self.recoil()
@@ -55,10 +56,9 @@ class ExtraEnemy(pygame.sprite.Sprite):
 
     def gunfire(self):
         if self.guns_ready:
-            self.beams.add(
+            self.beam.add(
                 Beam(
-                    path='laser_beam.png',
-                    position=(self.rect.centerx, self.rect.centery+200),
+                    position=(self.rect.centerx, self.rect.centery+400),
                     speed=self.speed,
                 )
             )
@@ -75,8 +75,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
-        loaded_image = pygame.image.load(os.path.join('graphics', 'enemy_ship.png')).convert_alpha()
-        self.image = pygame.transform.scale(loaded_image, ENEMY_SIZE)
+        self.image = pygame.transform.scale(ENEMY_IMAGE.convert_alpha(), ENEMY_SIZE)
         self.rect = self.image.get_rect(center=position)
         self.xspeed = ENEMY_X_SPEED
         self.yspeed = ENEMY_Y_SPEED
@@ -97,9 +96,12 @@ def setup_enemies(group):
 
 def enemy_movement(enemies):
     for enemy in enemies:
-        if enemy.rect.right >= settings.WIDTH or enemy.rect.left <= 0:
+        if enemy.rect.left <= 0:
             for enemy in enemies:
-                enemy.xspeed *= -1
+                enemy.xspeed = 1
+        if enemy.rect.right >= settings.WIDTH:
+            for enemy in enemies:
+                enemy.xspeed = -1
                 
 
 def enemy_gunfire(enemies, lasers):
