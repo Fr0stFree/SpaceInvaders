@@ -7,7 +7,8 @@ import settings
 
 
 ENEMY_SIZE = (60, 40)
-ENEMY_SPEED = 1
+ENEMY_X_SPEED = 1
+ENEMY_Y_SPEED = 0
 ENEMY_STEP_SIZE = 5
 ENEMY_X_GAP = 65
 ENEMY_Y_GAP = 50
@@ -21,8 +22,12 @@ ENEMY_LASER_SIZE = (6, 25)
 
 EXTRA_ENEMY_SIZE = (68, 32)
 EXTRA_ENEMY_SPEED = 3
-EXTRA_ENEMY_START_POSITION = choice(((-settings.WIDTH//20, settings.HEIGHT//20), (1.05*settings.WIDTH, settings.HEIGHT//20)))
 BEAM_RECOIL_TIME = 3500
+EXTRA_ENEMY_START_POSITION = choice([
+    (-settings.WIDTH//20, settings.HEIGHT//20),
+    (1.05*settings.WIDTH, settings.HEIGHT//20),
+])
+
 
 class ExtraEnemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -73,11 +78,12 @@ class Enemy(pygame.sprite.Sprite):
         loaded_image = pygame.image.load(os.path.join('graphics', 'enemy_ship.png')).convert_alpha()
         self.image = pygame.transform.scale(loaded_image, ENEMY_SIZE)
         self.rect = self.image.get_rect(center=position)
-        self.speed = ENEMY_SPEED
-        self.step = ENEMY_STEP_SIZE
+        self.xspeed = ENEMY_X_SPEED
+        self.yspeed = ENEMY_Y_SPEED
 
     def update(self):
-        self.rect.x += self.speed
+        self.rect.x += self.xspeed
+        self.rect.y += self.yspeed
 
 def setup_enemies(group):
     for i, row in enumerate(range(ENEMY_ROWS)):
@@ -93,8 +99,8 @@ def enemy_movement(enemies):
     for enemy in enemies:
         if enemy.rect.right >= settings.WIDTH or enemy.rect.left <= 0:
             for enemy in enemies:
-                enemy.speed *= -1
-                enemy.rect.y += enemy.step
+                enemy.xspeed *= -1
+                
 
 def enemy_gunfire(enemies, lasers):
     random_enemy = choice(enemies)

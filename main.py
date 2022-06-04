@@ -1,4 +1,5 @@
 import sys
+import os
 import pygame
 
 import settings
@@ -7,18 +8,23 @@ from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
 
 
 ENEMY_GUNFIRE_RATE = 300
-EXTRA_ENEMY_APPEARANCE_TIME = 100
+EXTRA_ENEMY_APPEARANCE_TIME = 300
+LIVE_SIZE = (31, 29)
 
 class Game:
     def __init__(self):
         self.player = pygame.sprite.GroupSingle(Player())
 
+        self.lives = 3
+        loaded_image = pygame.image.load(os.path.join('graphics', 'player_ship.png')).convert_alpha()
+        self.live_surf = pygame.transform.scale(loaded_image, LIVE_SIZE)
+
         self.extra_enemy = pygame.sprite.GroupSingle()
         self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
 
         self.enemies = pygame.sprite.Group()
-        setup_enemies(self.enemies)
         self.lasers = pygame.sprite.Group()
+        setup_enemies(self.enemies)
         
     def extra_enemy_appearance(self):
         if not self.extra_enemy:
@@ -26,6 +32,15 @@ class Game:
         if self.extra_enemy_spawn <= 0:
             self.extra_enemy.add(ExtraEnemy())
             self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
+
+    def lives_system(self):
+        if self.lives <= 0: 
+            pygame.quit()
+            sys.exit()
+        for live in range(self.lives-1):
+            position = (settings.WIDTH - (LIVE_SIZE[1] * 2 + 15) + (live * (LIVE_SIZE[1]+10)), 10)
+            screen.blit(self.live_surf, position)
+        
 
     def collision_checks(self):
         #  Коллизии ракет игрока
@@ -41,22 +56,25 @@ class Game:
         lasers = self.lasers
         if lasers:
             for laser in lasers:
-                if pygame.sprite.spritecollide(laser, self.player, True):
+                if pygame.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
+                    self.lives -= 1
 
         # Коллизии луча специального противника           
         if self.extra_enemy:
             beams = self.extra_enemy.sprite.beams
             if beams:
                 for beam in beams:
-                    pygame.sprite.spritecollide(beam, self.player, True)
-
+                    pygame.sprite.spritecollide(beam, self.player, False)
+                    beam.kill()
+                    self.lives -= 1
 
     def run(self):
         #  Обновление игрока
         self.player.update()
         self.player.draw(screen)
         self.player.sprite.missiles.draw(screen)
+        self.lives_system()
         
         #  Обновление специального противника
         self.extra_enemy_appearance()
