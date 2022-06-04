@@ -15,14 +15,14 @@ ENEMY_X_OFFSET = 50
 ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
 ENEMY_COLUMNS = 10
-ENEMY_LASER_SPEED = -2
+ENEMY_LASER_SPEED = -1
 ENEMY_LASER_ACCELERATION = -0.1
 ENEMY_LASER_SIZE = (6, 25)
 
 EXTRA_ENEMY_SIZE = (68, 32)
 EXTRA_ENEMY_SPEED = 3
-EXTRA_ENEMY_START_POSITION = (-settings.WIDTH//20, settings.HEIGHT//20)
-BEAM_RECOIL_TIME = 4500
+EXTRA_ENEMY_START_POSITION = choice(((-settings.WIDTH//20, settings.HEIGHT//20), (1.05*settings.WIDTH, settings.HEIGHT//20)))
+BEAM_RECOIL_TIME = 3500
 
 class ExtraEnemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -32,16 +32,16 @@ class ExtraEnemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=EXTRA_ENEMY_START_POSITION)
         self.speed = EXTRA_ENEMY_SPEED 
         
-        self.guns_ready = True
-        self.recoil_time = 0  
+        self.guns_ready = False
+        self.recoil_time = 0
         self.beam_reload = BEAM_RECOIL_TIME
         self.beams = pygame.sprite.Group()
 
     def update(self):
-        self.movement()
-        self.gunfire()
-        self.recoil()
         self.beams.update()
+        self.gunfire()
+        self.movement()
+        self.recoil()
 
     def movement(self):
         self.rect.x += self.speed
@@ -53,7 +53,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
             self.beams.add(
                 Beam(
                     path='laser_beam.png',
-                    position=self.rect.center,
+                    position=(self.rect.centerx, self.rect.centery+200),
                     speed=self.speed,
                 )
             )
@@ -65,7 +65,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
             current_time = pygame.time.get_ticks()
             if current_time - self.recoil_time >= self.beam_reload:
                 self.guns_ready = True
-
+    
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, position):

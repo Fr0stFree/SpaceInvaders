@@ -7,7 +7,7 @@ from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
 
 
 ENEMY_GUNFIRE_RATE = 300
-EXTRA_ENEMY_APPEARANCE_TIME = 1000
+EXTRA_ENEMY_APPEARANCE_TIME = 100
 
 class Game:
     def __init__(self):
@@ -27,6 +27,31 @@ class Game:
             self.extra_enemy.add(ExtraEnemy())
             self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
 
+    def collision_checks(self):
+        #  Коллизии ракет игрока
+        missiles = self.player.sprite.missiles
+        if missiles:
+            for missile in missiles:
+                if pygame.sprite.spritecollide(missile, self.enemies, True):
+                    missile.kill()
+                if pygame.sprite.spritecollide(missile, self.extra_enemy, True):
+                    missile.kill()
+        
+        # Коллизии лазеров противника            
+        lasers = self.lasers
+        if lasers:
+            for laser in lasers:
+                if pygame.sprite.spritecollide(laser, self.player, True):
+                    laser.kill()
+
+        # Коллизии луча специального противника           
+        if self.extra_enemy:
+            beams = self.extra_enemy.sprite.beams
+            if beams:
+                for beam in beams:
+                    pygame.sprite.spritecollide(beam, self.player, True)
+
+
     def run(self):
         #  Обновление игрока
         self.player.update()
@@ -37,8 +62,8 @@ class Game:
         self.extra_enemy_appearance()
         if self.extra_enemy:
             self.extra_enemy.update()
-            self.extra_enemy.draw(screen)
             self.extra_enemy.sprite.beams.draw(screen)
+            self.extra_enemy.draw(screen)
 
         #  Обновление группы противников
         self.enemies.update()
@@ -47,7 +72,8 @@ class Game:
         self.lasers.update()
         self.lasers.draw(screen)
 
-        
+        # Проверка коллизий
+        self.collision_checks()
 
 
 if __name__ == '__main__':
@@ -58,9 +84,6 @@ if __name__ == '__main__':
 
     ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
     pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
-    
-    EXTRA_ENEMY_APPEAR_EVENT = pygame.USEREVENT + 2
-    pygame.time.set_timer(EXTRA_ENEMY_APPEAR_EVENT, 7000)
 
     while True:
         for event in pygame.event.get():
@@ -71,8 +94,6 @@ if __name__ == '__main__':
             if event.type == ENEMY_GUNFIRE_EVENT:
                 enemy_gunfire(game.enemies.sprites(), game.lasers)
 
-            # if event.type == EXTRA_ENEMY_APPEAR_EVENT:
-            #     game.extra_enemy = pygame.sprite.GroupSingle(ExtraEnemy())
 
         screen.fill(settings.SCREEN_COLOR)
         game.run()
