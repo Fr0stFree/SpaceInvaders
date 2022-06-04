@@ -6,17 +6,21 @@ import settings
 from player import Player
 from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
 
-
-ENEMY_GUNFIRE_RATE = 300
-EXTRA_ENEMY_APPEARANCE_TIME = 1000
+BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 HEALTH_SIZE = (31, 29)
 HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 FONT_SIZE = 26
+FONT_COLOR = (255, 255, 255)
+
+ENEMY_GUNFIRE_RATE = 300
+EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
 class Game:
     def __init__(self):
+        self.background_surf = BACKGROUND_IMAGE.convert_alpha()
+        self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
+        
         self.player = pygame.sprite.GroupSingle(Player())
-
         self.lives = 3
         self.live_surf = pygame.transform.scale(HEALTH_IMAGE.convert_alpha(), HEALTH_SIZE)
         
@@ -30,8 +34,11 @@ class Game:
         self.score = 0
         self.font = pygame.font.Font(os.path.join('Pixeltype.ttf'), FONT_SIZE)
 
+    def display_background(self):
+        screen.blit(self.background_surf, self.background_rect)
+
     def extra_enemy_appearance(self):
-        if len(self.enemies) < 15:
+        if len(self.enemies) < 18:
             if not self.extra_enemy:
                 self.extra_enemy_spawn -= 1
             if self.extra_enemy_spawn <= 0:
@@ -47,7 +54,7 @@ class Game:
             screen.blit(self.live_surf, position)
     
     def score_system(self):
-        score_surf = self.font.render(f'score: {self.score}', False, 'white')
+        score_surf = self.font.render(f'score: {self.score}', False, FONT_COLOR)
         score_rect = score_surf.get_rect(topleft=(0.05*settings.WIDTH, 0.95*settings.HEIGHT))
         screen.blit(score_surf, score_rect)
 
@@ -80,6 +87,9 @@ class Game:
                     self.lives -= 1
         
     def run(self):
+        #  Обновление фона
+        self.display_background()
+
         #  Обновление игрока
         self.player.update()
         self.player.draw(screen)
