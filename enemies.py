@@ -10,7 +10,6 @@ ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
 ENEMY_SIZE = (60, 40)
 ENEMY_X_SPEED = 1
 ENEMY_Y_SPEED = 0
-ENEMY_STEP_SIZE = 5
 ENEMY_X_GAP = 65
 ENEMY_Y_GAP = 50
 ENEMY_X_OFFSET = 50
@@ -23,12 +22,18 @@ ENEMY_LASER_SIZE = (6, 25)
 
 EXTRA_ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
 EXTRA_ENEMY_SIZE = (68, 32)
-EXTRA_ENEMY_SPEED = 3
+EXTRA_ENEMY_SPEED = 2
 BEAM_RECOIL_TIME = 3500
 EXTRA_ENEMY_START_POSITION = choice([
     (-settings.WIDTH//20, settings.HEIGHT//20),
     (1.05*settings.WIDTH, settings.HEIGHT//20),
 ])
+
+EXPLOSION_ROWS = 6
+EXPLOSION_COLUMNS = 8
+EXPLOSION_RESOLUTION = (2048, 1536)
+NUMBER_OF_EXPLOSION_FRAMES = 14
+EXPLOSION_ANIMATION_SPEED = 1.5
 
 
 class ExtraEnemy(pygame.sprite.Sprite):
@@ -83,6 +88,31 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.xspeed
         self.rect.y += self.yspeed
+
+
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, position):
+        super().__init__()
+        self.frames = []
+        explosions = pygame.image.load(os.path.join('graphics', 'explosion.png'))
+        width = EXPLOSION_RESOLUTION[0]//EXPLOSION_COLUMNS
+        height = EXPLOSION_RESOLUTION[1]//EXPLOSION_ROWS
+        for i in range(EXPLOSION_ROWS):
+            for j in range(EXPLOSION_COLUMNS):
+                explosion = explosions.subsurface((width*j, height*i, width, height)).convert_alpha()
+                transformed_explosion = pygame.transform.scale(explosion, (width//2, height//2))
+                self.frames.append(transformed_explosion)
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(center=position)
+
+    def update(self):
+        try: 
+            self.current_frame += EXPLOSION_ANIMATION_SPEED
+            self.image = self.frames[int(self.current_frame)]
+        except IndexError:
+            self.kill()
+
 
 def setup_enemies(group):
     for i, row in enumerate(range(ENEMY_ROWS)):

@@ -4,9 +4,13 @@ import pygame
 
 import settings
 from player import Player
-from enemies import setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy
+from enemies import (
+    setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy, Explosion
+    )
 
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
+
+PLAYER_HEALTH = 3
 HEALTH_SIZE = (31, 29)
 HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 FONT_SIZE = 26
@@ -19,9 +23,9 @@ class Game:
     def __init__(self):
         self.background_surf = BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
-        
+
         self.player = pygame.sprite.GroupSingle(Player())
-        self.lives = 3
+        self.lives = PLAYER_HEALTH
         self.live_surf = pygame.transform.scale(HEALTH_IMAGE.convert_alpha(), HEALTH_SIZE)
         
         self.extra_enemy = pygame.sprite.GroupSingle()
@@ -31,6 +35,8 @@ class Game:
         self.lasers = pygame.sprite.Group()
         setup_enemies(self.enemies)
         
+        self.explosions = pygame.sprite.Group()
+
         self.score = 0
         self.font = pygame.font.Font(os.path.join('Pixeltype.ttf'), FONT_SIZE)
 
@@ -64,9 +70,12 @@ class Game:
         if missiles:
             for missile in missiles:
                 if pygame.sprite.spritecollide(missile, self.enemies, True):
+                    explosion = Explosion((missile.rect.x, missile.rect.y-20))
+                    self.explosions.add(explosion)
                     missile.kill()
                     self.score += 1
                 if pygame.sprite.spritecollide(missile, self.extra_enemy, True):
+                    self.explosions.add(explosion)
                     missile.kill()
                     self.score += 5
         
@@ -109,6 +118,11 @@ class Game:
         enemy_movement(self.enemies.sprites())
         self.lasers.update()
         self.lasers.draw(screen)
+
+        #  Отображение взрывов
+        if self.explosions:
+            self.explosions.draw(screen)
+            self.explosions.update()
 
         # Проверка коллизий
         self.projectile_collisions_system()
