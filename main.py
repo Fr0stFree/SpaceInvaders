@@ -8,6 +8,8 @@ from enemies import (
     setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy, Explosion
     )
 
+RUNNING = True
+
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
 PLAYER_HEALTH = 3
@@ -17,7 +19,16 @@ FONT_SIZE = 26
 FONT_COLOR = (255, 255, 255)
 
 ENEMY_GUNFIRE_RATE = 300
+ENEMIES_MUST_BE_BEFORE_THE_BOSS = 12
 EXTRA_ENEMY_APPEARANCE_TIME = 1000
+
+class Menu:
+    def __init__(self):
+        self.background_surf = BACKGROUND_IMAGE.convert_alpha()
+        self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
+    
+    def run(self):
+        screen.blit(self.background_surf, self.background_rect)
 
 class Game:
     def __init__(self):
@@ -44,7 +55,7 @@ class Game:
         screen.blit(self.background_surf, self.background_rect)
 
     def extra_enemy_appearance(self):
-        if len(self.enemies) < 18:
+        if len(self.enemies) < ENEMIES_MUST_BE_BEFORE_THE_BOSS:
             if not self.extra_enemy:
                 self.extra_enemy_spawn -= 1
             if self.extra_enemy_spawn <= 0:
@@ -53,8 +64,8 @@ class Game:
 
     def player_health_system(self):
         if self.lives <= 0: 
-            pygame.quit()
-            sys.exit()
+            global RUNNING
+            RUNNING = False
         for live in range(self.lives-1):
             position = (settings.WIDTH - (HEALTH_SIZE[1] * 2 + 25) + (live * (HEALTH_SIZE[1]+10)), 10)
             screen.blit(self.live_surf, position)
@@ -70,11 +81,12 @@ class Game:
         if missiles:
             for missile in missiles:
                 if pygame.sprite.spritecollide(missile, self.enemies, True):
-                    explosion = Explosion((missile.rect.x, missile.rect.y-20))
+                    explosion = Explosion(missile.rect.center)
                     self.explosions.add(explosion)
                     missile.kill()
                     self.score += 1
                 if pygame.sprite.spritecollide(missile, self.extra_enemy, True):
+                    explosion = Explosion(missile.rect.center)
                     self.explosions.add(explosion)
                     missile.kill()
                     self.score += 5
@@ -136,6 +148,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
     clock = pygame.time.Clock()
     game = Game()
+    menu = Menu()
 
     ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
     pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
@@ -150,8 +163,10 @@ if __name__ == '__main__':
                 enemy_gunfire(game.enemies.sprites(), game.lasers)
 
 
-        screen.fill(settings.SCREEN_COLOR)
-        game.run()
+        if RUNNING:
+            game.run()
+        else: 
+            menu.run()
 
         pygame.display.flip()
         clock.tick(settings.FPS)

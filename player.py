@@ -2,7 +2,7 @@ import pygame
 import os
 
 import settings
-from weapons import Projectile
+from weapons import Missile
 
 
 PLAYER_START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
@@ -10,9 +10,6 @@ PLAYER_SPEED = 3
 PLAYER_SIZE = (52,48)
 PLAYER_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 
-MISSILE_SPEED = 2
-MISSILE_SIZE = (10, 45)
-MISSILE_ACCELERATION = 0.15
 RECOIL_COOLDOWN = 1600
 
 
@@ -52,12 +49,8 @@ class Player(pygame.sprite.Sprite):
 
     def gunfire(self):
         self.missiles.add(
-            Projectile(
-                path='player_missile.png',
+            Missile(
                 position=self.rect.center,
-                start_speed=MISSILE_SPEED,
-                acceleration=MISSILE_ACCELERATION,
-                size=MISSILE_SIZE,
             )
         )
 

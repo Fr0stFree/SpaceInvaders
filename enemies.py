@@ -7,15 +7,15 @@ import settings
 
 
 ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
-ENEMY_SIZE = (60, 40)
+ENEMY_SIZE = (35, 34)
 ENEMY_X_SPEED = 1
 ENEMY_Y_SPEED = 0
-ENEMY_X_GAP = 65
-ENEMY_Y_GAP = 50
+ENEMY_X_GAP = 85
+ENEMY_Y_GAP = 70
 ENEMY_X_OFFSET = 50
 ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
-ENEMY_COLUMNS = 10
+ENEMY_COLUMNS = 7
 ENEMY_LASER_SPEED = -1
 ENEMY_LASER_ACCELERATION = -0.1
 ENEMY_LASER_SIZE = (6, 25)
@@ -29,10 +29,7 @@ EXTRA_ENEMY_START_POSITION = choice([
     (1.05*settings.WIDTH, settings.HEIGHT//20),
 ])
 
-EXPLOSION_ROWS = 6
-EXPLOSION_COLUMNS = 8
-EXPLOSION_RESOLUTION = (2048, 1536)
-NUMBER_OF_EXPLOSION_FRAMES = 14
+EXPLOSION_SIZE = (100, 100)
 EXPLOSION_ANIMATION_SPEED = 1.5
 
 
@@ -94,14 +91,9 @@ class Explosion(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         self.frames = []
-        explosions = pygame.image.load(os.path.join('graphics', 'explosion.png'))
-        width = EXPLOSION_RESOLUTION[0]//EXPLOSION_COLUMNS
-        height = EXPLOSION_RESOLUTION[1]//EXPLOSION_ROWS
-        for i in range(EXPLOSION_ROWS):
-            for j in range(EXPLOSION_COLUMNS):
-                explosion = explosions.subsurface((width*j, height*i, width, height)).convert_alpha()
-                transformed_explosion = pygame.transform.scale(explosion, (width//2, height//2))
-                self.frames.append(transformed_explosion)
+        for i in range(9):
+            explosion = pygame.image.load(os.path.join('graphics', 'Missile', f'Missile_3_Explosion_00{i}.png'))
+            self.frames.append(pygame.transform.scale(explosion, (EXPLOSION_SIZE)))
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
@@ -137,7 +129,6 @@ def enemy_movement(enemies):
 def enemy_gunfire(enemies, lasers):
     random_enemy = choice(enemies)
     laser_sprite = Projectile(
-        path='enemy_laser.png',
         position=random_enemy.rect.center,
         start_speed=ENEMY_LASER_SPEED,
         acceleration=ENEMY_LASER_ACCELERATION,
