@@ -14,6 +14,11 @@ RECOIL_COOLDOWN = 1600
 
 
 class Player(pygame.sprite.Sprite):
+    EXPLOSION_ANIMATION_SPEED = 0.5
+    EXPLOSION_RESOLUTION = (2048, 1536)
+    EXPLOSION_COLUMNS = 8
+    EXPLOSION_ROWS = 6
+
     def __init__(self):
         super().__init__()
         self.image = pygame.transform.scale(PLAYER_IMAGE.convert_alpha(), PLAYER_SIZE)
@@ -24,6 +29,27 @@ class Player(pygame.sprite.Sprite):
         self.recoil_cooldown = RECOIL_COOLDOWN
         
         self.missiles = pygame.sprite.Group()
+
+        self.frames = [self.image]
+        explosions = pygame.image.load(os.path.join('graphics', 'explosion.png'))
+        width = self.EXPLOSION_RESOLUTION[0]//self.EXPLOSION_COLUMNS
+        height = self.EXPLOSION_RESOLUTION[1]//self.EXPLOSION_ROWS
+        for i in range(self.EXPLOSION_ROWS):
+            for j in range(self.EXPLOSION_COLUMNS):
+                explosion = explosions.subsurface((width*j, height*i, width, height)).convert_alpha()
+                transformed_explosion = pygame.transform.scale(explosion, (width//2, height//2))
+                self.frames.append(transformed_explosion)
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+    def explode(self):
+        try: 
+            self.current_frame += self.EXPLOSION_ANIMATION_SPEED
+            self.image = self.frames[int(self.current_frame)]
+        except IndexError:
+            self.kill()
+
 
     def get_input(self):
         keys = pygame.key.get_pressed()

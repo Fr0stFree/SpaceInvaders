@@ -62,10 +62,7 @@ class Game:
                 self.extra_enemy.add(ExtraEnemy())
                 self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
 
-    def player_health_system(self):
-        if self.lives <= 0: 
-            global RUNNING
-            RUNNING = False
+    def display_lives(self):
         for live in range(self.lives-1):
             position = (settings.WIDTH - (HEALTH_SIZE[1] * 2 + 25) + (live * (HEALTH_SIZE[1]+10)), 10)
             screen.blit(self.live_surf, position)
@@ -112,10 +109,15 @@ class Game:
         self.display_background()
 
         #  Обновление игрока
-        self.player.update()
+        self.display_lives()
+        if self.lives > 0:
+            self.player.update()
+        else:
+            self.player.sprite.explode()
+
         self.player.draw(screen)
         self.player.sprite.missiles.draw(screen)
-        self.player_health_system()
+
         
         #  Обновление специального противника
         self.extra_enemy_appearance()
