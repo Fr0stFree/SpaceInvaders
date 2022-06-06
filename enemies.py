@@ -57,15 +57,15 @@ class ExtraEnemy(pygame.sprite.Sprite):
     
 
 class Enemy(pygame.sprite.Sprite):
-    ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
-    ENEMY_SIZE = (35, 34)
-    ENEMY_X_SPEED = 1
+    IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
+    SIZE = (35, 34)
+    SPEED = 1
 
     def __init__(self, position):
         super().__init__()
-        self.image = pygame.transform.scale(self.ENEMY_IMAGE.convert_alpha(), self.ENEMY_SIZE)
+        self.image = pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)
         self.rect = self.image.get_rect(center=position)
-        self.xspeed = self.ENEMY_X_SPEED
+        self.xspeed = self.SPEED
 
     def update(self):
         self.rect.x += self.xspeed

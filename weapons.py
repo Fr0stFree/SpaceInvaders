@@ -9,6 +9,7 @@ class Projectile(pygame.sprite.Sprite):
     ACCELERATION = -0.1
     SIZE = (6, 25)
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'enemy_laser.png'))
+    LAUNCH_VOLUME = 0.03
 
     def __init__(self, position):
         super().__init__()
@@ -16,7 +17,9 @@ class Projectile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=position)
         self.speed = self.SPEED
         self.acceleration = self.ACCELERATION
-
+        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'projectile_launch.mp3'))
+        self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
+    
     def destroy_sprite(self):
         if self.rect.y > settings.HEIGHT or self.rect.y < 0:
             self.kill()
@@ -32,6 +35,7 @@ class Missile(pygame.sprite.Sprite):
     START_SPEED = 2
     SIZE = (18, 65)
     ACCELERATION = 0.15
+    MISSILE_LAUNCH_VOLUME = 0.06
 
     def __init__(self, position):
         super().__init__()
@@ -43,6 +47,8 @@ class Missile(pygame.sprite.Sprite):
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
         self.speed = self.START_SPEED
+        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'missile_launch.mp3'))
+        self.sound_effect.play().set_volume(self.MISSILE_LAUNCH_VOLUME)
 
 
     def destroy_sprite(self):
@@ -62,8 +68,9 @@ class Missile(pygame.sprite.Sprite):
 
 class Explosion(pygame.sprite.Sprite):
     SIZE = (100, 100)
-    ANIMATION_SPEED = 1.5
+    ANIMATION_SPEED = 1
     NUMBER_OF_FRAMES = 9
+    EXPLOSION_VOLUME = 0.33
 
     def __init__(self, position):
         super().__init__()
@@ -80,6 +87,8 @@ class Explosion(pygame.sprite.Sprite):
             self.current_frame += self.ANIMATION_SPEED
             self.image = self.frames[int(self.current_frame)]
         except IndexError:
+            sound_effect = pygame.mixer.Sound(os.path.join('audio', 'missile_explosion.mp3'))
+            sound_effect.play().set_volume(self.EXPLOSION_VOLUME)
             self.kill()
 
 
@@ -87,6 +96,7 @@ class Beam(pygame.sprite.Sprite):
     BEAM_DURATION = 1200
     BEAM_SIZE = (125, 800)
     BEAM_IMAGE = pygame.image.load(os.path.join('graphics', 'laser_beam.png'))
+    BEAM_VOLUME = 0.1
 
     def __init__(self, position, speed):
         super().__init__()
@@ -94,6 +104,8 @@ class Beam(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=position)
         self.speed = speed
         self.created = pygame.time.get_ticks()
+        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'laser_beam.mp3'))
+        self.sound_effect.play().set_volume(self.BEAM_VOLUME)
         
     def update(self):
         self.destroy_sprite()

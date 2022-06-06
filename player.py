@@ -7,13 +7,15 @@ from weapons import Missile
 
 class Player(pygame.sprite.Sprite):
     START_HEALTH = 3
-    START_POSITION = (settings.WIDTH//2, settings.HEIGHT)
+    RECOIL_COOLDOWN = 2000
+    START_POSITION = (0.5*settings.WIDTH, 0.9*settings.HEIGHT)
     SPEED = 3
     SIZE = (52,48)
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 
     EXPLOSIONS_IMAGE = pygame.image.load(os.path.join('graphics', 'explosion.png'))
-    RECOIL_COOLDOWN = 1600
+    SELF_EXPLOSION_VOLUME = 0.3
+    EXPLOSION_VOLUME = 0.25
     EXPLOSION_ANIMATION_SPEED = 0.5
     EXPLOSION_RESOLUTION = (2048, 1536)
     EXPLOSION_COLUMNS = 8
@@ -42,7 +44,10 @@ class Player(pygame.sprite.Sprite):
                 self.frames.append(scaled_explosion_frame)
 
     def explode(self):
-        try: 
+        try:
+            if self.current_frame == 0:
+                sound_effect = pygame.mixer.Sound(os.path.join('audio', 'self_explosion.mp3'))
+                sound_effect.play().set_volume(self.SELF_EXPLOSION_VOLUME)
             self.current_frame += self.EXPLOSION_ANIMATION_SPEED
             self.image = self.frames[int(self.current_frame)]
             self.rect = self.image.get_rect(center=self.rect.center)
