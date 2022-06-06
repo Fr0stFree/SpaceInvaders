@@ -5,13 +5,11 @@ import pygame
 import settings
 from player import Player
 from weapons import Explosion
-from enemies import (
-    ExtraEnemy, EnemyGroup
-    )
+from enemies import ExtraEnemy, EnemyGroup
 
 
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
-RUNNING = True
+
 
 class Menu:
     FONT_COLOR = (150, 150, 150)
@@ -20,7 +18,7 @@ class Menu:
     def __init__(self, score):
         self.background_surf = BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
-        self.text_font = pygame.font.Font(os.path.join('Pixeltype.ttf'), self.FONT_SIZE)
+        self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
         self.text_surf = self.text_font.render('Press space to run the game', False, self.FONT_COLOR)
         self.text_rect = self.text_surf.get_rect(center=(0.5*settings.WIDTH, 0.7*settings.HEIGHT))
         self.score = score
@@ -49,28 +47,20 @@ class Game:
 
         self.player = pygame.sprite.GroupSingle(Player())
         self.live_surf = pygame.transform.scale(self.HEALTH_IMAGE.convert_alpha(), self.HEALTH_SIZE)
-        
+
         self.extra_enemy = pygame.sprite.GroupSingle()
         self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
         self.enemies = EnemyGroup()
         self.enemies.setup()
-        
+
         self.explosions = pygame.sprite.Group()
 
         self.score = 0
-        self.font = pygame.font.Font(os.path.join('Pixeltype.ttf'), self.FONT_SIZE)
+        self.font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
 
     def display_background(self):
         screen.blit(self.background_surf, self.background_rect)
-
-    def extra_enemy_appearance(self):
-        if len(self.enemies.sprites) < self.ENEMIES_BEFORE_THE_BOSS:
-            if not self.extra_enemy:
-                self.extra_enemy_spawn -= 1
-            if self.extra_enemy_spawn <= 0:
-                self.extra_enemy.add(ExtraEnemy())
-                self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
     def display_lives(self):
         for live in range(self.player.sprite.health-1):
@@ -81,6 +71,14 @@ class Game:
         score_surf = self.font.render(f'score: {self.score}', False, self.FONT_COLOR)
         score_rect = score_surf.get_rect(topleft=(0.05*settings.WIDTH, 0.95*settings.HEIGHT))
         screen.blit(score_surf, score_rect)
+
+    def extra_enemy_appearance(self):
+        if len(self.enemies.sprites) < self.ENEMIES_BEFORE_THE_BOSS:
+            if not self.extra_enemy:
+                self.extra_enemy_spawn -= 1
+            if self.extra_enemy_spawn <= 0:
+                self.extra_enemy.add(ExtraEnemy())
+                self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
     def projectile_collisions_system(self):
         #  Коллизии ракет игрока
@@ -97,8 +95,8 @@ class Game:
                     self.explosions.add(explosion)
                     missile.kill()
                     self.score += 5
-        
-        # Коллизии лазеров противника            
+
+        # Коллизии лазеров противника
         lasers = self.enemies.lasers
         if lasers:
             for laser in lasers:
@@ -106,28 +104,28 @@ class Game:
                     laser.kill()
                     self.player.sprite.health -= 1
 
-        # Коллизии луча специального противника        
+        # Коллизии луча специального противника
         if self.extra_enemy:
             beam = self.extra_enemy.sprite.beam.sprite
             if beam:
                 if pygame.sprite.spritecollide(beam, self.player, False):
-                    beam.kill()
                     self.player.sprite.health -= 1
-        
+
     def run(self):
-        #  Обновление фона
+        #  Обновление фона и вспомогательной информации
         self.display_background()
+        self.display_score()
+        self.display_lives()
 
         #  Обновление игрока
-        self.display_lives()
         if self.player.sprite.health > 0:
             self.player.update()
         else:
             self.player.sprite.explode()
-        
+
         self.player.draw(screen)
         self.player.sprite.missiles.draw(screen)
-        
+
         #  Обновление специального противника
         self.extra_enemy_appearance()
         if self.extra_enemy:
@@ -136,11 +134,14 @@ class Game:
             self.extra_enemy.draw(screen)
 
         #  Обновление группы противников
-        self.enemies.sprites.update()
-        self.enemies.sprites.draw(screen)
-        self.enemies.movement()
-        self.enemies.lasers.update()
-        self.enemies.lasers.draw(screen)
+        if self.enemies.sprites:
+            self.enemies.sprites.update()
+            self.enemies.sprites.draw(screen)
+            self.enemies.movement()
+            self.enemies.lasers.update()
+            self.enemies.lasers.draw(screen)
+        else:
+            self.enemies.setup()
 
         #  Отображение взрывов
         if self.explosions:
@@ -149,9 +150,6 @@ class Game:
 
         # Проверка коллизий
         self.projectile_collisions_system()
-
-        # Отображение очков
-        self.display_score()
 
 
 if __name__ == '__main__':
@@ -168,7 +166,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
+
             if event.type == ENEMY_GUNFIRE_EVENT:
                 game.enemies.gunfire()
 
@@ -176,7 +174,7 @@ if __name__ == '__main__':
             if not game.player.sprite.alive:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     game = Game()
-        
+
         if game.player.sprite.alive:
             game.run()
         else:

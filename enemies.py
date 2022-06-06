@@ -11,7 +11,7 @@ ENEMY_Y_GAP = 70
 ENEMY_X_OFFSET = 50
 ENEMY_Y_OFFSET = 75
 ENEMY_ROWS = 3
-ENEMY_COLUMNS = 7
+ENEMY_COLUMNS = 8
 ENEMY_LASER_SPEED = -1
 ENEMY_LASER_ACCELERATION = -0.1
 ENEMY_LASER_SIZE = (6, 25)
@@ -108,11 +108,12 @@ class EnemyGroup:
                     enemy.xspeed = -1
 
     def gunfire(self):
-        random_enemy = choice(list(self.sprites))
-        laser_sprite = Projectile(
-            position=random_enemy.rect.center,
-            start_speed=ENEMY_LASER_SPEED,
-            acceleration=ENEMY_LASER_ACCELERATION,
-            size=ENEMY_LASER_SIZE,
-        )
-        self.lasers.add(laser_sprite)
+        if self.sprites:
+            random_enemy = choice(list(self.sprites))
+            laser_sprite = Projectile(
+                position=random_enemy.rect.center,
+                start_speed=ENEMY_LASER_SPEED,
+                acceleration=ENEMY_LASER_ACCELERATION,
+                size=ENEMY_LASER_SIZE,
+            )
+            self.lasers.add(laser_sprite)
