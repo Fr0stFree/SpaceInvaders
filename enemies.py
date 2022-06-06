@@ -18,8 +18,6 @@ ENEMY_LASER_SIZE = (6, 25)
 
 
 
-
-
 class ExtraEnemy(pygame.sprite.Sprite):
     EXTRA_ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
     EXTRA_ENEMY_SIZE = (68, 32)
@@ -85,54 +83,36 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += self.xspeed
 
 
-class Explosion(pygame.sprite.Sprite):
-    EXPLOSION_SIZE = (100, 100)
-    EXPLOSION_ANIMATION_SPEED = 1.5
+class EnemyGroup:
+    def __init__(self):
+        self.sprites = pygame.sprite.Group()
+        self.lasers = pygame.sprite.Group()
 
-    def __init__(self, position):
-        super().__init__()
-        self.frames = []
-        for i in range(9):
-            explosion = pygame.image.load(os.path.join('graphics', 'Missile', f'Missile_3_Explosion_00{i}.png'))
-            self.frames.append(pygame.transform.scale(explosion, (self.EXPLOSION_SIZE)))
-        self.current_frame = 0
-        self.image = self.frames[self.current_frame]
-        self.rect = self.image.get_rect(center=position)
+    def setup(self):
+        for i, row in enumerate(range(ENEMY_ROWS)):
+            for j, column in enumerate(range(ENEMY_COLUMNS)):
+                position = (
+                    j * ENEMY_X_GAP + ENEMY_X_OFFSET,
+                    i * ENEMY_Y_GAP + ENEMY_Y_OFFSET,
+                )
+                enemy_sprite = Enemy(position=position)
+                self.sprites.add(enemy_sprite)
 
-    def update(self):
-        try: 
-            self.current_frame += self.EXPLOSION_ANIMATION_SPEED
-            self.image = self.frames[int(self.current_frame)]
-        except IndexError:
-            self.kill()
+    def movement(self):
+        for enemy in self.sprites:
+            if enemy.rect.left <= 0:
+                for enemy in self.sprites:
+                    enemy.xspeed = 1
+            if enemy.rect.right >= settings.WIDTH:
+                for enemy in self.sprites:
+                    enemy.xspeed = -1
 
-
-def setup_enemies(group):
-    for i, row in enumerate(range(ENEMY_ROWS)):
-        for j, column in enumerate(range(ENEMY_COLUMNS)):
-            position = (
-                j * ENEMY_X_GAP + ENEMY_X_OFFSET,
-                i * ENEMY_Y_GAP + ENEMY_Y_OFFSET,
-            )
-            enemy_sprite = Enemy(position=position)
-            group.add(enemy_sprite)
-
-def enemy_movement(enemies):
-    for enemy in enemies:
-        if enemy.rect.left <= 0:
-            for enemy in enemies:
-                enemy.xspeed = 1
-        if enemy.rect.right >= settings.WIDTH:
-            for enemy in enemies:
-                enemy.xspeed = -1
-                
-
-def enemy_gunfire(enemies, lasers):
-    random_enemy = choice(enemies)
-    laser_sprite = Projectile(
-        position=random_enemy.rect.center,
-        start_speed=ENEMY_LASER_SPEED,
-        acceleration=ENEMY_LASER_ACCELERATION,
-        size=ENEMY_LASER_SIZE,
-    )
-    lasers.add(laser_sprite)
+    def gunfire(self):
+        random_enemy = choice(list(self.sprites))
+        laser_sprite = Projectile(
+            position=random_enemy.rect.center,
+            start_speed=ENEMY_LASER_SPEED,
+            acceleration=ENEMY_LASER_ACCELERATION,
+            size=ENEMY_LASER_SIZE,
+        )
+        self.lasers.add(laser_sprite)

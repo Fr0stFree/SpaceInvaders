@@ -45,7 +45,6 @@ class Missile(pygame.sprite.Sprite):
         if self.rect.y > settings.HEIGHT or self.rect.y < 0:
             self.kill()
 
-
     def update(self):
         if self.current_frame < self.NUMBER_OF_FRAMES-1:
             self.current_frame += self.ANIMATION_SPEED
@@ -55,6 +54,29 @@ class Missile(pygame.sprite.Sprite):
         self.destroy_sprite()
         self.speed += self.ACCELERATION
         self.rect.y -= self.speed
+
+
+class Explosion(pygame.sprite.Sprite):
+    EXPLOSION_SIZE = (100, 100)
+    EXPLOSION_ANIMATION_SPEED = 1.5
+    EXPLOSION_FRAMES = 9
+
+    def __init__(self, position):
+        super().__init__()
+        self.frames = []
+        for i in range(self.EXPLOSION_FRAMES):
+            explosion = pygame.image.load(os.path.join('graphics', 'Missile', f'Missile_3_Explosion_00{i}.png'))
+            self.frames.append(pygame.transform.scale(explosion, (self.EXPLOSION_SIZE)))
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(center=position)
+
+    def update(self):
+        try: 
+            self.current_frame += self.EXPLOSION_ANIMATION_SPEED
+            self.image = self.frames[int(self.current_frame)]
+        except IndexError:
+            self.kill()
 
 
 class Beam(pygame.sprite.Sprite):
