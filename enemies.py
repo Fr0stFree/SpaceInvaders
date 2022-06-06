@@ -6,10 +6,6 @@ from weapons import Projectile, Beam
 import settings
 
 
-ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
-ENEMY_SIZE = (35, 34)
-ENEMY_X_SPEED = 1
-ENEMY_Y_SPEED = 0
 ENEMY_X_GAP = 85
 ENEMY_Y_GAP = 70
 ENEMY_X_OFFSET = 50
@@ -20,29 +16,29 @@ ENEMY_LASER_SPEED = -1
 ENEMY_LASER_ACCELERATION = -0.1
 ENEMY_LASER_SIZE = (6, 25)
 
-EXTRA_ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
-EXTRA_ENEMY_SIZE = (68, 32)
-EXTRA_ENEMY_SPEED = 2
-BEAM_RECOIL_TIME = 3500
-EXTRA_ENEMY_START_POSITION = choice([
-    (-settings.WIDTH//20, settings.HEIGHT//20),
-    (1.05*settings.WIDTH, settings.HEIGHT//20),
-])
 
-EXPLOSION_SIZE = (100, 100)
-EXPLOSION_ANIMATION_SPEED = 1.5
+
 
 
 class ExtraEnemy(pygame.sprite.Sprite):
+    EXTRA_ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
+    EXTRA_ENEMY_SIZE = (68, 32)
+    EXTRA_ENEMY_SPEED = 2
+    BEAM_RECOIL_TIME = 3500
+    EXTRA_ENEMY_START_POSITION = choice([
+        (-settings.WIDTH//20, settings.HEIGHT//20),
+        (1.05*settings.WIDTH, settings.HEIGHT//20),
+    ])
+
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(EXTRA_ENEMY_IMAGE.convert_alpha(), EXTRA_ENEMY_SIZE)
-        self.rect = self.image.get_rect(center=EXTRA_ENEMY_START_POSITION)
-        self.speed = EXTRA_ENEMY_SPEED 
+        self.image = pygame.transform.scale(self.EXTRA_ENEMY_IMAGE.convert_alpha(), self.EXTRA_ENEMY_SIZE)
+        self.rect = self.image.get_rect(center=self.EXTRA_ENEMY_START_POSITION)
+        self.speed = self.EXTRA_ENEMY_SPEED 
         
         self.guns_ready = False
         self.recoil_time = 0
-        self.beam_reload = BEAM_RECOIL_TIME
+        self.beam_reload = self.BEAM_RECOIL_TIME
         self.beam = pygame.sprite.GroupSingle()
 
     def update(self):
@@ -75,32 +71,37 @@ class ExtraEnemy(pygame.sprite.Sprite):
     
 
 class Enemy(pygame.sprite.Sprite):
+    ENEMY_IMAGE = pygame.image.load(os.path.join('graphics', 'enemy_ship.png'))
+    ENEMY_SIZE = (35, 34)
+    ENEMY_X_SPEED = 1
+
     def __init__(self, position):
         super().__init__()
-        self.image = pygame.transform.scale(ENEMY_IMAGE.convert_alpha(), ENEMY_SIZE)
+        self.image = pygame.transform.scale(self.ENEMY_IMAGE.convert_alpha(), self.ENEMY_SIZE)
         self.rect = self.image.get_rect(center=position)
-        self.xspeed = ENEMY_X_SPEED
-        self.yspeed = ENEMY_Y_SPEED
+        self.xspeed = self.ENEMY_X_SPEED
 
     def update(self):
         self.rect.x += self.xspeed
-        self.rect.y += self.yspeed
 
 
 class Explosion(pygame.sprite.Sprite):
+    EXPLOSION_SIZE = (100, 100)
+    EXPLOSION_ANIMATION_SPEED = 1.5
+
     def __init__(self, position):
         super().__init__()
         self.frames = []
         for i in range(9):
             explosion = pygame.image.load(os.path.join('graphics', 'Missile', f'Missile_3_Explosion_00{i}.png'))
-            self.frames.append(pygame.transform.scale(explosion, (EXPLOSION_SIZE)))
+            self.frames.append(pygame.transform.scale(explosion, (self.EXPLOSION_SIZE)))
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
 
     def update(self):
         try: 
-            self.current_frame += EXPLOSION_ANIMATION_SPEED
+            self.current_frame += self.EXPLOSION_ANIMATION_SPEED
             self.image = self.frames[int(self.current_frame)]
         except IndexError:
             self.kill()

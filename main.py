@@ -8,19 +8,10 @@ from enemies import (
     setup_enemies, enemy_movement, enemy_gunfire, ExtraEnemy, Explosion
     )
 
-RUNNING = True
 
+RUNNING = True
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
-PLAYER_HEALTH = 3
-HEALTH_SIZE = (31, 29)
-HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
-FONT_SIZE = 26
-FONT_COLOR = (255, 255, 255)
-
-ENEMY_GUNFIRE_RATE = 300
-ENEMIES_MUST_BE_BEFORE_THE_BOSS = 12
-EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
 class Menu:
     def __init__(self):
@@ -31,16 +22,25 @@ class Menu:
         screen.blit(self.background_surf, self.background_rect)
 
 class Game:
+    PLAYER_HEALTH = 3
+    HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
+    HEALTH_SIZE = (31, 29)
+    FONT_SIZE = 26
+    FONT_COLOR = (255, 255, 255)
+    ENEMY_GUNFIRE_RATE = 300
+    ENEMIES_BEFORE_THE_BOSS = 12
+    EXTRA_ENEMY_APPEARANCE_TIME = 1000
+
     def __init__(self):
         self.background_surf = BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
 
         self.player = pygame.sprite.GroupSingle(Player())
-        self.lives = PLAYER_HEALTH
-        self.live_surf = pygame.transform.scale(HEALTH_IMAGE.convert_alpha(), HEALTH_SIZE)
+        self.lives = self.PLAYER_HEALTH
+        self.live_surf = pygame.transform.scale(self.HEALTH_IMAGE.convert_alpha(), self.HEALTH_SIZE)
         
         self.extra_enemy = pygame.sprite.GroupSingle()
-        self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
+        self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
         self.enemies = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
@@ -49,26 +49,26 @@ class Game:
         self.explosions = pygame.sprite.Group()
 
         self.score = 0
-        self.font = pygame.font.Font(os.path.join('Pixeltype.ttf'), FONT_SIZE)
+        self.font = pygame.font.Font(os.path.join('Pixeltype.ttf'), self.FONT_SIZE)
 
     def display_background(self):
         screen.blit(self.background_surf, self.background_rect)
 
     def extra_enemy_appearance(self):
-        if len(self.enemies) < ENEMIES_MUST_BE_BEFORE_THE_BOSS:
+        if len(self.enemies) < self.ENEMIES_BEFORE_THE_BOSS:
             if not self.extra_enemy:
                 self.extra_enemy_spawn -= 1
             if self.extra_enemy_spawn <= 0:
                 self.extra_enemy.add(ExtraEnemy())
-                self.extra_enemy_spawn = EXTRA_ENEMY_APPEARANCE_TIME
+                self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
     def display_lives(self):
         for live in range(self.lives-1):
-            position = (settings.WIDTH - (HEALTH_SIZE[1] * 2 + 25) + (live * (HEALTH_SIZE[1]+10)), 10)
+            position = (settings.WIDTH - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
             screen.blit(self.live_surf, position)
     
     def score_system(self):
-        score_surf = self.font.render(f'score: {self.score}', False, FONT_COLOR)
+        score_surf = self.font.render(f'score: {self.score}', False, self.FONT_COLOR)
         score_rect = score_surf.get_rect(topleft=(0.05*settings.WIDTH, 0.95*settings.HEIGHT))
         screen.blit(score_surf, score_rect)
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     menu = Menu()
 
     ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
-    pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
+    pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, game.ENEMY_GUNFIRE_RATE)
 
     while True:
         for event in pygame.event.get():
