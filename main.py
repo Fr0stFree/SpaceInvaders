@@ -141,6 +141,7 @@ class Game:
             self.enemies.lasers.update()
             self.enemies.lasers.draw(screen)
         else:
+            self.score += 5
             self.enemies.setup()
 
         #  Отображение взрывов
