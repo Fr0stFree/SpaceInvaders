@@ -181,15 +181,13 @@ if __name__ == '__main__':
 
             #  Перезапуск игры
             if not game.player.sprite.alive:
-                game.enemies.sprites.empty()
-                if game.extra_enemy.sprite:
-                    game.extra_enemy.sprite.empty()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     game = Game()
 
         if game.player.sprite.alive:
             game.run()
         else:
+            game.enemies.sprites.empty()
             menu = Menu(game.score)
             menu.run()
 

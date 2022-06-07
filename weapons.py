@@ -17,8 +17,8 @@ class Projectile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=position)
         self.speed = self.SPEED
         self.acceleration = self.ACCELERATION
-        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'projectile_launch.mp3'))
-        self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
+        # self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'projectile_launch.mp3'))
+        # self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
     
     def destroy_sprite(self):
         if self.rect.y > settings.HEIGHT or self.rect.y < 0:
@@ -81,14 +81,14 @@ class Explosion(pygame.sprite.Sprite):
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect(center=position)
+        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'missile_explosion.mp3'))
+        self.sound_effect.play().set_volume(self.EXPLOSION_VOLUME)
 
     def update(self):
         try: 
             self.current_frame += self.ANIMATION_SPEED
             self.image = self.frames[int(self.current_frame)]
         except IndexError:
-            sound_effect = pygame.mixer.Sound(os.path.join('audio', 'missile_explosion.mp3'))
-            sound_effect.play().set_volume(self.EXPLOSION_VOLUME)
             self.kill()
 
 
