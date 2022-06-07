@@ -6,8 +6,6 @@
 ### Учебный проект "Space Invaders"
 Проект "Space Invaders" - небольшая видеоигра (500 строк кода), созданная по мотивам классической Space Invaders написанная на [Python](https://github.com/python) c помощью библиотеки/игрового движка [Pygame](https://github.com/pygame/)
 
-![alt text](https://github.com/Fr0stFree/Space-Invaders/blob/main/screenshot.jpg?raw=true)
-
 Данный проект разработан исключительно в образовательных целях. Все графические элементы и звуковые эффекты взяты из открытых источников.
 
 Возьмите под управление космический корабль с целью отбиться от кораблей коварного противника! Успешно поражайте противников залпами своих ракет и уворачивайтесь от их выстрелов. Победите могучий флагман противника! Заработайте как можно больше очков.
@@ -28,3 +26,4 @@ pip install pygame
 ```
 python main.py
 ```
+![alt text](https://github.com/Fr0stFree/Space-Invaders/blob/main/screenshot.jpg?raw=true)
