@@ -13,19 +13,20 @@ BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 class Menu:
     FONT_COLOR = (150, 150, 150)
     FONT_SIZE = 36
+    MENU_MESSAGE = 'Press space to run the game'
 
     def __init__(self, score):
         self.background_surf = BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
-        self.text_surf = self.text_font.render('Press space to run the game', False, self.FONT_COLOR)
+        self.text_surf = self.text_font.render(self.MENU_MESSAGE, False, self.FONT_COLOR)
         self.text_rect = self.text_surf.get_rect(center=(0.5*settings.WIDTH, 0.7*settings.HEIGHT))
         self.score = score
     
     def run(self):
         screen.blit(self.background_surf, self.background_rect)
         screen.blit(self.text_surf, self.text_rect)
-        if self.score != 0:
+        if self.score:
             score_surf = self.text_font.render(f'your score: {self.score}', False, self.FONT_COLOR)
             score_rect = score_surf.get_rect(center=(0.5*settings.WIDTH, 0.45*settings.HEIGHT))
             screen.blit(score_surf, score_rect)
