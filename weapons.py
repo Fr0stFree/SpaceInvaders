@@ -6,7 +6,7 @@ import settings
 
 class Projectile(pygame.sprite.Sprite):
     SPEED = -1
-    ACCELERATION = -0.1
+    ACCELERATION = -0.05
     SIZE = (6, 25)
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'enemy_laser.png'))
     LAUNCH_VOLUME = 0.03
@@ -17,8 +17,8 @@ class Projectile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=position)
         self.speed = self.SPEED
         self.acceleration = self.ACCELERATION
-        # self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'projectile_launch.mp3'))
-        # self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
+        self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'projectile_launch.mp3'))
+        self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
     
     def destroy_sprite(self):
         if self.rect.y > settings.HEIGHT or self.rect.y < 0:
@@ -32,7 +32,7 @@ class Projectile(pygame.sprite.Sprite):
 class Missile(pygame.sprite.Sprite):
     ANIMATION_SPEED = 0.5
     NUMBER_OF_FRAMES = 10
-    START_SPEED = 2
+    START_SPEED = 1
     SIZE = (18, 65)
     ACCELERATION = 0.15
     MISSILE_LAUNCH_VOLUME = 0.06
