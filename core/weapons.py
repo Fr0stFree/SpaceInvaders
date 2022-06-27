@@ -1,7 +1,10 @@
 import os
 import pygame
+import json
 
-import settings
+
+with open('settings.json', 'r') as data:
+    SETTINGS = json.load(data)
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -21,7 +24,7 @@ class Projectile(pygame.sprite.Sprite):
         self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
     
     def destroy_sprite(self):
-        if self.rect.y > settings.HEIGHT or self.rect.y < 0:
+        if self.rect.y > SETTINGS['HEIGHT'] or self.rect.y < 0:
             self.kill()
 
     def update(self):
@@ -52,7 +55,7 @@ class Missile(pygame.sprite.Sprite):
 
 
     def destroy_sprite(self):
-        if self.rect.y > settings.HEIGHT or self.rect.y < 0:
+        if self.rect.y > SETTINGS['HEIGHT'] or self.rect.y < 0:
             self.kill()
 
     def update(self):

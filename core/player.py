@@ -1,20 +1,23 @@
 import pygame
 import os
+import json
 
-import settings
-from weapons import Missile
+from .weapons import Missile
+
+
+with open('settings.json', 'r') as data:
+    SETTINGS = json.load(data)
 
 
 class Player(pygame.sprite.Sprite):
     START_HEALTH = 3
     RECOIL_COOLDOWN = 2000
-    START_POSITION = (0.5*settings.WIDTH, 0.9*settings.HEIGHT)
+    START_POSITION = (0.5*SETTINGS['WIDTH'], 0.9*SETTINGS['HEIGHT'])
     SPEED = 3
     SIZE = (52,48)
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
 
     EXPLOSIONS_IMAGE = pygame.image.load(os.path.join('graphics', 'explosion.png'))
-    SELF_EXPLOSION_VOLUME = 0.3
     EXPLOSION_VOLUME = 0.25
     EXPLOSION_ANIMATION_SPEED = 0.5
     EXPLOSION_RESOLUTION = (2048, 1536)
@@ -80,14 +83,14 @@ class Player(pygame.sprite.Sprite):
         self.missiles.add(Missile(position=self.rect.center))
 
     def constraint(self):
-        if self.rect.right >= settings.WIDTH:
-            self.rect.right = settings.WIDTH
+        if self.rect.right >= SETTINGS['WIDTH']:
+            self.rect.right = SETTINGS['WIDTH']
         if self.rect.left <= 0:
             self.rect.left = 0
-        if self.rect.top <= settings.HEIGHT // 2:
-            self.rect.top = settings.HEIGHT // 2
-        if self.rect.bottom >= settings.HEIGHT:
-            self.rect.bottom = settings.HEIGHT
+        if self.rect.top <= SETTINGS['HEIGHT'] // 2:
+            self.rect.top = SETTINGS['HEIGHT'] // 2
+        if self.rect.bottom >= SETTINGS['HEIGHT']:
+            self.rect.bottom = SETTINGS['HEIGHT']
 
     def update(self):
         self.get_input()

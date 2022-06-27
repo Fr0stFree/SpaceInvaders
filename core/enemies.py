@@ -1,9 +1,14 @@
 import os
-import pygame
 from random import choice
+import json
 
-from weapons import Projectile, Beam
-import settings
+import pygame
+
+from .weapons import Projectile, Beam
+
+
+with open('settings.json', 'r') as data:
+    SETTINGS = json.load(data)
 
 
 class ExtraEnemy(pygame.sprite.Sprite):
@@ -12,8 +17,8 @@ class ExtraEnemy(pygame.sprite.Sprite):
     SPEED = 2
     BEAM_RECOIL_TIME = 3500
     START_POSITION = choice([
-        (-0.05*settings.WIDTH, 0.05*settings.HEIGHT),
-        (1.05*settings.WIDTH, 0.05*settings.HEIGHT),
+        (-0.05*SETTINGS['WIDTH'], 0.05*SETTINGS['HEIGHT']),
+        (1.05*SETTINGS['WIDTH'], 0.05*SETTINGS['HEIGHT']),
     ])
 
     def __init__(self):
@@ -35,7 +40,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
 
     def movement(self):
         self.rect.x += self.speed
-        if self.rect.right > 1.1*settings.WIDTH or self.rect.left < -settings.WIDTH//10:
+        if self.rect.right > 1.1*SETTINGS['WIDTH'] or self.rect.left < -SETTINGS['WIDTH']//10:
             self.speed *= -1
 
     def gunfire(self):
@@ -98,7 +103,7 @@ class EnemyGroup:
             if enemy.rect.left <= 0:
                 for enemy in self.sprites:
                     enemy.xspeed = 1
-            if enemy.rect.right >= settings.WIDTH:
+            if enemy.rect.right >= SETTINGS['WIDTH']:
                 for enemy in self.sprites:
                     enemy.xspeed = -1
 

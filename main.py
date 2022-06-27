@@ -1,12 +1,16 @@
 import sys
 import os
+import json
+
 import pygame
 
-import settings
-from player import Player
-from weapons import Explosion
-from enemies import ExtraEnemy, EnemyGroup
+from core.player import Player
+from core.weapons import Explosion
+from core.enemies import ExtraEnemy, EnemyGroup
 
+
+with open('settings.json', 'r') as data:
+    SETTINGS = json.load(data)
 
 class Button:
     WIDTH, HEIGHT = 150, 40
@@ -73,9 +77,9 @@ class Menu:
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.score = score
-        self.button_run = Button(text='RUN', position=(0.5*settings.WIDTH, 0.35*settings.HEIGHT))
-        self.button_settings = Button(text='SETTINGS', position=(0.5*settings.WIDTH, 0.5*settings.HEIGHT))
-        self.button_exit = Button(text='EXIT', position=(0.5*settings.WIDTH, 0.65*settings.HEIGHT))
+        self.button_run = Button(text='RUN', position=(0.5*SETTINGS['WIDTH'], 0.35*SETTINGS['HEIGHT']))
+        self.button_settings = Button(text='SETTINGS', position=(0.5*SETTINGS['WIDTH'], 0.5*SETTINGS['HEIGHT']))
+        self.button_exit = Button(text='EXIT', position=(0.5*SETTINGS['WIDTH'], 0.65*SETTINGS['HEIGHT']))
     
     def __str__(self):
         return 'menu'
@@ -88,7 +92,7 @@ class Menu:
         if self.score:
             self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
             score_surf = self.text_font.render(f'your score: {self.score}', False, self.FONT_COLOR)
-            score_rect = score_surf.get_rect(center=(0.5*settings.WIDTH, 0.15*settings.HEIGHT))
+            score_rect = score_surf.get_rect(center=(0.5*SETTINGS['WIDTH'], 0.15*SETTINGS['HEIGHT']))
             screen.blit(score_surf, score_rect)
 
 
@@ -127,12 +131,12 @@ class Game:
 
     def display_lives(self):
         for live in range(self.player.sprite.health-1):
-            position = (settings.WIDTH - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
+            position = (SETTINGS['WIDTH'] - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
             screen.blit(self.live_surf, position)
     
     def display_score(self):
         score_surf = self.font.render(f'score: {self.score}', False, self.FONT_COLOR)
-        score_rect = score_surf.get_rect(topleft=(0.05*settings.WIDTH, 0.95*settings.HEIGHT))
+        score_rect = score_surf.get_rect(topleft=(0.05*SETTINGS['WIDTH'], 0.95*SETTINGS['HEIGHT']))
         screen.blit(score_surf, score_rect)
 
     def extra_enemy_appearance(self):
@@ -224,7 +228,7 @@ def play_music():
 
 if __name__ == '__main__':
     pygame.init()
-    screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
+    screen = pygame.display.set_mode((SETTINGS['WIDTH'], SETTINGS['HEIGHT']))
     play_music()
     clock = pygame.time.Clock()
     menu = Menu()
@@ -260,4 +264,4 @@ if __name__ == '__main__':
                     procedure = game
 
         pygame.display.flip()
-        clock.tick(settings.FPS)
+        clock.tick(SETTINGS['FPS'])
