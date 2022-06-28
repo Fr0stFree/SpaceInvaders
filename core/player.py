@@ -5,18 +5,12 @@ import json
 from .weapons import Missile
 
 
-with open('settings.json', 'r') as data:
-    SETTINGS = json.load(data)
-
-
 class Player(pygame.sprite.Sprite):
     START_HEALTH = 3
     RECOIL_COOLDOWN = 2000
-    START_POSITION = (0.5*SETTINGS['WIDTH'], 0.9*SETTINGS['HEIGHT'])
     SPEED = 3
     SIZE = (52,48)
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
-
     EXPLOSIONS_IMAGE = pygame.image.load(os.path.join('graphics', 'explosion.png'))
     EXPLOSION_VOLUME = 0.25
     EXPLOSION_ANIMATION_SPEED = 0.5
@@ -26,10 +20,12 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
+        with open('settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         self.frames = [pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)]
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
-        self.rect = self.image.get_rect(center=self.START_POSITION)
+        self.rect = self.image.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.9*self.SETTINGS['HEIGHT']))
         self.health = self.START_HEALTH
         self.alive = True
         self.speed = self.SPEED
@@ -50,7 +46,7 @@ class Player(pygame.sprite.Sprite):
         try:
             if self.current_frame == 0:
                 sound_effect = pygame.mixer.Sound(os.path.join('audio', 'self_explosion.mp3'))
-                sound_effect.play().set_volume(self.SELF_EXPLOSION_VOLUME)
+                sound_effect.play().set_volume(self.EXPLOSION_VOLUME)
             self.current_frame += self.EXPLOSION_ANIMATION_SPEED
             self.image = self.frames[int(self.current_frame)]
             self.rect = self.image.get_rect(center=self.rect.center)
@@ -83,14 +79,14 @@ class Player(pygame.sprite.Sprite):
         self.missiles.add(Missile(position=self.rect.center))
 
     def constraint(self):
-        if self.rect.right >= SETTINGS['WIDTH']:
-            self.rect.right = SETTINGS['WIDTH']
+        if self.rect.right >= self.SETTINGS['WIDTH']:
+            self.rect.right = self.SETTINGS['WIDTH']
         if self.rect.left <= 0:
             self.rect.left = 0
-        if self.rect.top <= SETTINGS['HEIGHT'] // 2:
-            self.rect.top = SETTINGS['HEIGHT'] // 2
-        if self.rect.bottom >= SETTINGS['HEIGHT']:
-            self.rect.bottom = SETTINGS['HEIGHT']
+        if self.rect.top <= self.SETTINGS['HEIGHT'] // 2:
+            self.rect.top = self.SETTINGS['HEIGHT'] // 2
+        if self.rect.bottom >= self.SETTINGS['HEIGHT']:
+            self.rect.bottom = self.SETTINGS['HEIGHT']
 
     def update(self):
         self.get_input()

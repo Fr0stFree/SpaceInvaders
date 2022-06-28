@@ -4,9 +4,6 @@ import json
 import pygame
 
 
-with open('settings.json', 'r') as data:
-    SETTINGS = json.load(data)
-
 class Button:
     WIDTH, HEIGHT = 150, 40
     UNPRESSED_COLOR = '#475F77'
@@ -71,13 +68,15 @@ class Menu:
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
     def __init__(self, screen, score=0):
+        with open('settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.screen = screen
         self.score = score
-        self.button_run = Button(text='RUN', position=(0.5*SETTINGS['WIDTH'], 0.35*SETTINGS['HEIGHT']), screen=screen)
-        self.button_settings = Button(text='SETTINGS', position=(0.5*SETTINGS['WIDTH'], 0.5*SETTINGS['HEIGHT']), screen=screen)
-        self.button_exit = Button(text='EXIT', position=(0.5*SETTINGS['WIDTH'], 0.65*SETTINGS['HEIGHT']), screen=screen)
+        self.button_run = Button(text='RUN', position=(0.5*self.SETTINGS['WIDTH'], 0.35*self.SETTINGS['HEIGHT']), screen=screen)
+        self.button_settings = Button(text='SETTINGS', position=(0.5*self.SETTINGS['WIDTH'], 0.5*self.SETTINGS['HEIGHT']), screen=screen)
+        self.button_exit = Button(text='EXIT', position=(0.5*self.SETTINGS['WIDTH'], 0.65*self.SETTINGS['HEIGHT']), screen=screen)
     
     def __str__(self):
         return 'menu'
@@ -90,5 +89,5 @@ class Menu:
         if self.score:
             self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
             score_surf = self.text_font.render(f'your score: {self.score}', False, self.FONT_COLOR)
-            score_rect = score_surf.get_rect(center=(0.5*SETTINGS['WIDTH'], 0.15*SETTINGS['HEIGHT']))
+            score_rect = score_surf.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.15*self.SETTINGS['HEIGHT']))
             self.screen.blit(score_surf, score_rect)

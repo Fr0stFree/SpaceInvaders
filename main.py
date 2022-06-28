@@ -9,16 +9,11 @@ from core.menu import Menu
 from core.settings import Settings
 
 
-with open('settings.json', 'r') as data:
-    SETTINGS = json.load(data)
 
-
-def play_soundtrack():
-    soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
-    soundtrack.play(loops=-1)
-    soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
-
-if __name__ == '__main__':
+def initialize():
+    global SETTINGS, screen, procedure, clock, procedure, menu
+    with open('settings.json', 'r') as data:
+        SETTINGS = json.load(data)
     pygame.init()
     screen = pygame.display.set_mode((SETTINGS['WIDTH'], SETTINGS['HEIGHT']))
     play_soundtrack()
@@ -26,9 +21,14 @@ if __name__ == '__main__':
     menu = Menu(screen)
     procedure = menu
 
-    ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
-    ENEMY_GUNFIRE_RATE = 300
-    pygame.time.set_timer(ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
+def play_soundtrack():
+    soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
+    soundtrack.play(loops=-1)
+    soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
+
+if __name__ == '__main__':
+    # Initialiazing pygame module and settings
+    initialize()
 
     while True:
         procedure.run()
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                 sys.exit()
 
             if str(procedure) == 'game':
-                if event.type == ENEMY_GUNFIRE_EVENT:
+                if event.type == game.ENEMY_GUNFIRE_EVENT:
                     game.enemies.gunfire()
                 
                 if not game.player.sprite.alive:
@@ -52,13 +52,15 @@ if __name__ == '__main__':
                     sys.exit()
 
                 if menu.button_run.click():
+                    initialize()
                     game = Game(screen)
                     procedure = game
 
                 if menu.button_settings.click():
                     pygame.quit()
                     settings = Settings()
-                    settings.run()
+                    if settings.run():
+                        initialize()
 
         pygame.display.flip()
         clock.tick(SETTINGS['FPS'])

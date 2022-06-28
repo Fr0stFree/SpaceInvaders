@@ -7,24 +7,21 @@ import pygame
 from .weapons import Projectile, Beam
 
 
-with open('settings.json', 'r') as data:
-    SETTINGS = json.load(data)
-
-
 class ExtraEnemy(pygame.sprite.Sprite):
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'extra_enemy.png'))
     SIZE = (68, 32)
     SPEED = 2
     BEAM_RECOIL_TIME = 3500
-    START_POSITION = choice([
-        (-0.05*SETTINGS['WIDTH'], 0.05*SETTINGS['HEIGHT']),
-        (1.05*SETTINGS['WIDTH'], 0.05*SETTINGS['HEIGHT']),
-    ])
 
     def __init__(self):
         super().__init__()
+        with open('settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         self.image = pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)
-        self.rect = self.image.get_rect(center=self.START_POSITION)
+        self.rect = self.image.get_rect(center=choice([
+            (-0.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
+            (1.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
+        ]))
         self.speed = self.SPEED 
         
         self.guns_ready = False
@@ -40,7 +37,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
 
     def movement(self):
         self.rect.x += self.speed
-        if self.rect.right > 1.1*SETTINGS['WIDTH'] or self.rect.left < -SETTINGS['WIDTH']//10:
+        if self.rect.right > 1.1*self.SETTINGS['WIDTH'] or self.rect.left < -self.SETTINGS['WIDTH']//10:
             self.speed *= -1
 
     def gunfire(self):
@@ -85,6 +82,8 @@ class EnemyGroup:
     COLUMNS = 8
 
     def __init__(self):
+        with open('settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         self.sprites = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
 
@@ -103,7 +102,7 @@ class EnemyGroup:
             if enemy.rect.left <= 0:
                 for enemy in self.sprites:
                     enemy.xspeed = 1
-            if enemy.rect.right >= SETTINGS['WIDTH']:
+            if enemy.rect.right >= self.SETTINGS['WIDTH']:
                 for enemy in self.sprites:
                     enemy.xspeed = -1
 

@@ -8,10 +8,6 @@ from .weapons import Explosion
 from .enemies import ExtraEnemy, EnemyGroup
 
 
-with open('settings.json', 'r') as data:
-    SETTINGS = json.load(data)
-
-
 class Game:
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
     HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
@@ -22,6 +18,8 @@ class Game:
     EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
     def __init__(self, screen):
+        with open('settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         self.screen = screen
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
@@ -40,6 +38,10 @@ class Game:
         self.score = 0
         self.font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
 
+        self.ENEMY_GUNFIRE_EVENT = pygame.USEREVENT + 1
+        ENEMY_GUNFIRE_RATE = 300
+        pygame.time.set_timer(self.ENEMY_GUNFIRE_EVENT, ENEMY_GUNFIRE_RATE)
+
     def __str__(self):
         return 'game'
 
@@ -48,12 +50,12 @@ class Game:
 
     def display_lives(self):
         for live in range(self.player.sprite.health-1):
-            position = (SETTINGS['WIDTH'] - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
+            position = (self.SETTINGS['WIDTH'] - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
             self.screen.blit(self.live_surf, position)
     
     def display_score(self):
         score_surf = self.font.render(f'score: {self.score}', False, self.FONT_COLOR)
-        score_rect = score_surf.get_rect(topleft=(0.05*SETTINGS['WIDTH'], 0.95*SETTINGS['HEIGHT']))
+        score_rect = score_surf.get_rect(topleft=(0.05*self.SETTINGS['WIDTH'], 0.95*self.SETTINGS['HEIGHT']))
         self.screen.blit(score_surf, score_rect)
 
     def extra_enemy_appearance(self):

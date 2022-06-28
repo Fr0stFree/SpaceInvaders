@@ -4,22 +4,19 @@ import sys
 import PySimpleGUI as GUI
 
 
-with open('./settings.json', 'r') as data:
-    SETTINGS = json.load(data)
-
-
 class Settings:
     def __init__(self):
+        with open('./settings.json', 'r') as data:
+            self.SETTINGS = json.load(data)
         GUI.theme('Gray Gray Gray')
-        GUI.set_options(
-            font='Franklin 10',
-        )
+        GUI.set_options(font='Franklin 10',)
         layout = [
-            [GUI.Text('Resolution'), GUI.Spin(['800x640', '1280x1024', '1024x768'], key='-RESOLUTION-')],
-            [GUI.Text('Frame Rate'), GUI.Spin(['30', '60'], key='-FPS-')],
-            [GUI.Text('Sound Volume'), GUI.Spin([x for x in range(0, 100, 5)], key='-VOLUME-')],
+            [GUI.Text(text='Resolution', size=12), GUI.Spin(values=['800x640', '1024x768', '1280x1024'], readonly=True, initial_value=f"{self.SETTINGS['HEIGHT']}x{self.SETTINGS['WIDTH']}", size=8, key='-RESOLUTION-')],
+            [GUI.Text(text='Frame Rate', size=12), GUI.Spin(values=['30', '60'], readonly=True, initial_value=self.SETTINGS['FPS'], size=8, key='-FPS-')],
+            [GUI.Text(text='Sound Volume', size=12), GUI.Spin(values=[x for x in range(0, 100, 5)], readonly=True, initial_value=int(self.SETTINGS['SOUNDTRACK_VOLUME']*100), size=8, key='-VOLUME-')],
+            [GUI.Text(text='', visible=False, expand_x=True, enable_events=True, key='-MESSAGE-')],
             [GUI.VPush()],
-            [GUI.Button('Read', size=(7, 1), key='-READ-'), GUI.Button('Save', size=(7, 1), key='-SAVE-'), GUI.Button('Recover', size=(6, 1), key='-RECOVER-'), GUI.Push()],
+            [GUI.Button('Set', size=(7, 1), key='-SAVE-'), GUI.Button('Recover', size=(7, 1), key='-RECOVER-'), GUI.Push()],
             [GUI.Button('Run', size=(7, 1), key='-RUN-'), GUI.Push(), GUI.Button('Close', size=(7, 1), key='-CLOSE-')]
         ]
         self.window = GUI.Window(
@@ -35,26 +32,42 @@ class Settings:
         while True:
             event, values = self.window.read()
 
-            if event == '-READ-':
-                with open('./settings.json', 'r') as data:
-                    SETTINGS = json.load(data)
-                print(f'settings: {SETTINGS}')
-
             if event == '-SAVE-':
-                # SETTINGS['WIDTH'] = values['']
-                print(f'values: {values}')
+                self.SETTINGS['HEIGHT'] = int(values['-RESOLUTION-'].split('x')[1])
+                self.SETTINGS['WIDTH'] = int(values['-RESOLUTION-'].split('x')[0])
+                self.SETTINGS['FPS'] = int(values['-FPS-'])
+                self.SETTINGS['SOUNDTRACK_VOLUME'] = float(values['-VOLUME-'])/100
+                
+                with open('./settings.json', 'w') as data:
+                    json.dump(self.SETTINGS, data, indent=4)
+
+                self.window['-MESSAGE-'].update('Settings have been applied successfully', visible=True)
+
+            if event == '-RECOVER-':
+                with open('./settings_default.json', 'r') as data:
+                    self.SETTINGS = json.load(data)
+                
+                self.window['-RESOLUTION-'].update(f"{self.SETTINGS['WIDTH']}x{self.SETTINGS['HEIGHT']}")
+                self.window['-FPS-'].update(self.SETTINGS['FPS'])
+                self.window['-VOLUME-'].update(int(self.SETTINGS['SOUNDTRACK_VOLUME']*100))
+
+                with open('./settings.json', 'w') as data:
+                    json.dump(self.SETTINGS, data, indent=4)
+
+                self.window['-MESSAGE-'].update('Settings have been reset', visible=True)
 
             if event == '-CLOSE-':
                 break
+
+            if event == '-RUN-':
+                self.window.close()
+                return True
         
         self.window.close()
-        sys.exit()
-
-    def __str__(self):
-        return 'settings'
-
 
 
 if __name__ == '__main__':
-    st = Settings()
-    st.run()
+    '''
+    Only for debugging.
+    '''
+    Settings().run()
