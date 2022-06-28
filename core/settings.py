@@ -53,5 +53,8 @@ class Settings:
     def __str__(self):
         return 'settings'
 
-st = Settings()
-st.run()
+
+
+if __name__ == '__main__':
+    st = Settings()
+    st.run()
