@@ -11,23 +11,23 @@ from core.settings import Settings
 
 
 def initialize():
-    global SETTINGS, screen, procedure, clock, procedure, menu
+    global SETTINGS, screen, procedure, clock, menu
+
     with open('settings.json', 'r') as data:
         SETTINGS = json.load(data)
+    
     pygame.init()
     screen = pygame.display.set_mode((SETTINGS['WIDTH'], SETTINGS['HEIGHT']))
-    play_soundtrack()
-    clock = pygame.time.Clock()
-    menu = Menu(screen)
+    menu = Menu(screen, SETTINGS=SETTINGS)
     procedure = menu
 
-def play_soundtrack():
+    clock = pygame.time.Clock()
+
     soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
     soundtrack.play(loops=-1)
     soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
 
 if __name__ == '__main__':
-    # Initialiazing pygame module and settings
     initialize()
 
     while True:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
                     game.enemies.gunfire()
                 
                 if not game.player.sprite.alive:
-                    menu = Menu(screen, score=game.score)
+                    menu = Menu(screen, SETTINGS, game.score)
                     procedure = menu
 
             elif str(procedure) == 'menu':
@@ -53,14 +53,14 @@ if __name__ == '__main__':
 
                 if menu.button_run.click():
                     initialize()
-                    game = Game(screen)
+                    game = Game(screen, SETTINGS)
                     procedure = game
 
                 if menu.button_settings.click():
                     pygame.quit()
-                    settings = Settings()
-                    if settings.run():
-                        initialize()
+                    settings = Settings(SETTINGS)
+                    settings.open()
+                    initialize()
 
         pygame.display.flip()
         clock.tick(SETTINGS['FPS'])

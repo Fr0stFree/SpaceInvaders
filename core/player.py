@@ -76,7 +76,7 @@ class Player(pygame.sprite.Sprite):
                 self.guns_ready = True
 
     def gunfire(self):
-        self.missiles.add(Missile(position=self.rect.center))
+        self.missiles.add(Missile(position=self.rect.center, settings=self.SETTINGS))
 
     def constraint(self):
         if self.rect.right >= self.SETTINGS['WIDTH']:

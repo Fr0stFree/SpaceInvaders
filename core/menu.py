@@ -67,9 +67,8 @@ class Menu:
     FONT_SIZE = 36
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
-    def __init__(self, screen, score=0):
-        with open('settings.json', 'r') as data:
-            self.SETTINGS = json.load(data)
+    def __init__(self, screen, SETTINGS, score=0):
+        self.SETTINGS = SETTINGS
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.screen = screen

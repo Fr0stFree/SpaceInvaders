@@ -13,10 +13,9 @@ class ExtraEnemy(pygame.sprite.Sprite):
     SPEED = 2
     BEAM_RECOIL_TIME = 3500
 
-    def __init__(self):
+    def __init__(self, SETTINGS):
         super().__init__()
-        with open('settings.json', 'r') as data:
-            self.SETTINGS = json.load(data)
+        self.SETTINGS = SETTINGS
         self.image = pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)
         self.rect = self.image.get_rect(center=choice([
             (-0.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
@@ -81,9 +80,8 @@ class EnemyGroup:
     ROWS = 3
     COLUMNS = 8
 
-    def __init__(self):
-        with open('settings.json', 'r') as data:
-            self.SETTINGS = json.load(data)
+    def __init__(self, SETTINGS):
+        self.SETTINGS = SETTINGS
         self.sprites = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
 
@@ -109,5 +107,5 @@ class EnemyGroup:
     def gunfire(self):
         if self.sprites:
             random_enemy = choice(list(self.sprites))
-            laser_sprite = Projectile(position=random_enemy.rect.center)
+            laser_sprite = Projectile(position=random_enemy.rect.center, SETTINGS=self.SETTINGS)
             self.lasers.add(laser_sprite)

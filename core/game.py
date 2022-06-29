@@ -17,9 +17,8 @@ class Game:
     ENEMIES_BEFORE_THE_BOSS = 12
     EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
-    def __init__(self, screen):
-        with open('settings.json', 'r') as data:
-            self.SETTINGS = json.load(data)
+    def __init__(self, screen, SETTINGS):
+        self.SETTINGS = SETTINGS
         self.screen = screen
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
@@ -30,7 +29,7 @@ class Game:
         self.extra_enemy = pygame.sprite.GroupSingle()
         self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
-        self.enemies = EnemyGroup()
+        self.enemies = EnemyGroup(SETTINGS)
         self.enemies.setup()
 
         self.explosions = pygame.sprite.Group()
@@ -63,7 +62,7 @@ class Game:
             if not self.extra_enemy:
                 self.extra_enemy_spawn -= 1
             if self.extra_enemy_spawn <= 0:
-                self.extra_enemy.add(ExtraEnemy())
+                self.extra_enemy.add(ExtraEnemy(self.SETTINGS))
                 self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
     def projectile_collisions_system(self):
