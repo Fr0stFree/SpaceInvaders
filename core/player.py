@@ -18,10 +18,9 @@ class Player(pygame.sprite.Sprite):
     EXPLOSION_COLUMNS = 8
     EXPLOSION_ROWS = 6
 
-    def __init__(self):
+    def __init__(self, SETTINGS):
         super().__init__()
-        with open('settings.json', 'r') as data:
-            self.SETTINGS = json.load(data)
+        self.SETTINGS = SETTINGS
         self.frames = [pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)]
         self.current_frame = 0
         self.image = self.frames[self.current_frame]

@@ -23,7 +23,7 @@ class Game:
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
 
-        self.player = pygame.sprite.GroupSingle(Player())
+        self.player = pygame.sprite.GroupSingle(Player(self.SETTINGS))
         self.live_surf = pygame.transform.scale(self.HEALTH_IMAGE.convert_alpha(), self.HEALTH_SIZE)
 
         self.extra_enemy = pygame.sprite.GroupSingle()

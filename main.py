@@ -59,8 +59,8 @@ if __name__ == '__main__':
                 if menu.button_settings.click():
                     pygame.quit()
                     settings = Settings(SETTINGS)
-                    settings.open()
-                    initialize()
+                    if settings.open():
+                        initialize()
 
         pygame.display.flip()
         clock.tick(SETTINGS['FPS'])

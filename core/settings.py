@@ -6,13 +6,11 @@ import PySimpleGUI as GUI
 
 class Settings:
     GUI.theme('Gray Gray Gray')
+    GUI.set_options(font='Franklin 10')
     WINDOW_SIZE = (300, 200)
     
     def __init__(self, SETTINGS):
         self.SETTINGS = SETTINGS
-    
-        GUI.theme('Gray Gray Gray')
-        GUI.set_options(font='Franklin 10')
         
         TEXT_RESOLUTION = GUI.Text(text='Resolution', size=12)
         SPIN_RESOLUTION = GUI.Spin(
@@ -67,6 +65,7 @@ class Settings:
         while True:
             event, values = self.window.read()
 
+            # Сохранение выбранных настроек
             if event == '-SET-':
                 self.SETTINGS['HEIGHT'] = int(values['-RESOLUTION-'].split('x')[1])
                 self.SETTINGS['WIDTH'] = int(values['-RESOLUTION-'].split('x')[0])
@@ -76,8 +75,9 @@ class Settings:
                 with open('./settings.json', 'w') as data:
                     json.dump(self.SETTINGS, data, indent=4)
 
-                self.window['-MESSAGE-'].update('Settings have been applied successfully', visible=True)
+                self.window['-MESSAGE-'].update('Settings have been applied', visible=True)
 
+            # Сброс настроек до дефолтных
             if event == '-RESET-':
                 with open('./settings_default.json', 'r') as data:
                     self.SETTINGS = json.load(data)
@@ -91,18 +91,21 @@ class Settings:
 
                 self.window['-MESSAGE-'].update('Settings have been reset', visible=True)
 
+            # Прекратить цикл и закрыть окно
             if event == '-CLOSE-':
                 break
             
+            # Запуск игры (работает только при запуске из main.py)
             if event == '-RUN-':
                 self.window.close()
-                return
+                return True
             
             # Обновление окна вывода сообщений при изменении настроек
             if event in ['-FPS-', '-RESOLUTION-', '-VOLUME-']:
                 self.window['-MESSAGE-'].update('')
 
         self.window.close()
+        sys.exit()
 
 
 if __name__ == '__main__':

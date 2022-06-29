@@ -4,7 +4,7 @@ import json
 import pygame
 
 
-class Button:
+class Button(pygame.sprite.Sprite):
     WIDTH, HEIGHT = 150, 40
     UNPRESSED_COLOR = '#475F77'
     HOVER_COLOR = '#D74B4B'
@@ -13,6 +13,7 @@ class Button:
     FONT_SIZE = 36
 
     def __init__(self, text, position, screen):
+        super().__init__()
         self.screen = screen
 
         self.pressed = False
@@ -45,7 +46,6 @@ class Button:
         pygame.draw.rect(self.screen, self.button_pressed_color, self.button_pressed_rect, border_radius=12)
         pygame.draw.rect(self.screen, self.button_color, self.button_rect, border_radius=12)
         self.screen.blit(self.text_surf, self.text_rect)
-        self.click()
 
     def click(self):
         mouse_position = pygame.mouse.get_pos()
@@ -74,8 +74,8 @@ class Menu:
         self.screen = screen
         self.score = score
         self.button_run = Button(text='RUN', position=(0.5*self.SETTINGS['WIDTH'], 0.35*self.SETTINGS['HEIGHT']), screen=screen)
-        self.button_settings = Button(text='SETTINGS', position=(0.5*self.SETTINGS['WIDTH'], 0.5*self.SETTINGS['HEIGHT']), screen=screen)
         self.button_exit = Button(text='EXIT', position=(0.5*self.SETTINGS['WIDTH'], 0.65*self.SETTINGS['HEIGHT']), screen=screen)
+        self.button_settings = Button(text='SETTINGS', position=(0.5*self.SETTINGS['WIDTH'], 0.5*self.SETTINGS['HEIGHT']), screen=screen)
     
     def __str__(self):
         return 'menu'
