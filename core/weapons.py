@@ -103,6 +103,7 @@ class Beam(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.scale(self.BEAM_IMAGE.convert_alpha(), self.BEAM_SIZE)
         self.rect = self.image.get_rect(center=position)
+        self.mask = pygame.mask.from_surface(self.image)
         self.speed = speed
         self.created = pygame.time.get_ticks()
         self.sound_effect = pygame.mixer.Sound(os.path.join('audio', 'laser_beam.mp3'))

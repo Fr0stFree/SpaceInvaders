@@ -14,8 +14,6 @@ class Game:
     HEALTH_SIZE = (31, 29)
     FONT_SIZE = 26
     FONT_COLOR = (255, 255, 255)
-    ENEMIES_BEFORE_THE_BOSS = 12
-    EXTRA_ENEMY_APPEARANCE_TIME = 1000
 
     def __init__(self, screen, SETTINGS):
         self.SETTINGS = SETTINGS
@@ -27,7 +25,6 @@ class Game:
         self.live_surf = pygame.transform.scale(self.HEALTH_IMAGE.convert_alpha(), self.HEALTH_SIZE)
 
         self.extra_enemy = pygame.sprite.GroupSingle()
-        self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
 
         self.enemies = EnemyGroup(SETTINGS)
         self.enemies.setup()
@@ -57,26 +54,22 @@ class Game:
         score_rect = score_surf.get_rect(topleft=(0.05*self.SETTINGS['WIDTH'], 0.95*self.SETTINGS['HEIGHT']))
         self.screen.blit(score_surf, score_rect)
 
-    def extra_enemy_appearance(self):
-        if len(self.enemies.sprites) < self.ENEMIES_BEFORE_THE_BOSS:
-            if not self.extra_enemy:
-                self.extra_enemy_spawn -= 1
-            if self.extra_enemy_spawn <= 0:
-                self.extra_enemy.add(ExtraEnemy(self.SETTINGS))
-                self.extra_enemy_spawn = self.EXTRA_ENEMY_APPEARANCE_TIME
-
     def projectile_collisions_system(self):
         #  Коллизии ракет игрока
         missiles = self.player.sprite.missiles
         if missiles:
             for missile in missiles:
+                #  С обычными противниками
                 if pygame.sprite.spritecollide(missile, self.enemies.sprites, True):
                     explosion = Explosion(missile.rect.center)
                     self.explosions.add(explosion)
                     missile.sound_effect.stop()
                     missile.kill()
                     self.score += 1
-                if pygame.sprite.spritecollide(missile, self.extra_enemy, True):
+
+                #  C Extra Enemy
+                if pygame.sprite.spritecollide(missile, self.extra_enemy, False):
+                    self.extra_enemy.sprite.health -= 1
                     explosion = Explosion(missile.rect.center)
                     self.explosions.add(explosion)
                     missile.sound_effect.stop()
@@ -90,13 +83,28 @@ class Game:
                 if pygame.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
                     self.player.sprite.health -= 1
-
+                    
         # Коллизии луча специального противника
-        if self.extra_enemy:
-            beam = self.extra_enemy.sprite.beam.sprite
-            if beam:
-                if pygame.sprite.spritecollide(beam, self.player, False):
-                    self.player.sprite.health -= 1
+        if (
+            # Должен существовать ExtraEnemy 
+            self.extra_enemy
+            # Тогда проверим наличие выпущенного им луча
+            and self.extra_enemy.sprite.beam.sprite 
+            # Тогда проверим коллизию с его прямоугольником
+            and pygame.sprite.spritecollide(
+                self.extra_enemy.sprite.beam.sprite,
+                self.player,
+                False,
+            )
+            # Если коллизия с прямоугольником существует, проверим коллизию с маской
+            and pygame.sprite.spritecollide(
+                self.extra_enemy.sprite.beam.sprite,
+                self.player,
+                False,
+                pygame.sprite.collide_mask,
+            )
+        ):
+            self.player.sprite.health = 0
 
     def run(self):
         #  Обновление фона и вспомогательной информации
@@ -114,11 +122,12 @@ class Game:
         self.player.sprite.missiles.draw(self.screen)
 
         #  Обновление специального противника
-        self.extra_enemy_appearance()
+        # self.extra_enemy_appearance()
         if self.extra_enemy:
             self.extra_enemy.update()
-            self.extra_enemy.sprite.beam.draw(self.screen)
-            self.extra_enemy.draw(self.screen)
+            if self.extra_enemy:
+                self.extra_enemy.sprite.beam.draw(self.screen)
+                self.extra_enemy.draw(self.screen)
 
         #  Обновление группы противников
         if self.enemies.sprites:
@@ -127,9 +136,8 @@ class Game:
             self.enemies.movement()
             self.enemies.lasers.update()
             self.enemies.lasers.draw(self.screen)
-        else:
-            self.score += 5
-            self.enemies.setup()
+        elif not self.extra_enemy:
+            self.extra_enemy.add(ExtraEnemy(self.SETTINGS))
 
         #  Отображение взрывов
         if self.explosions:

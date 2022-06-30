@@ -12,6 +12,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
     SIZE = (68, 32)
     SPEED = 2
     BEAM_RECOIL_TIME = 3500
+    HEALTH = 5
 
     def __init__(self, SETTINGS):
         super().__init__()
@@ -21,6 +22,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
             (-0.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
             (1.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
         ]))
+        self.health = self.HEALTH
         self.speed = self.SPEED 
         
         self.guns_ready = False
@@ -33,6 +35,7 @@ class ExtraEnemy(pygame.sprite.Sprite):
         self.gunfire()
         self.movement()
         self.recoil()
+        self.death()
 
     def movement(self):
         self.rect.x += self.speed
@@ -55,6 +58,10 @@ class ExtraEnemy(pygame.sprite.Sprite):
             current_time = pygame.time.get_ticks()
             if current_time - self.recoil_time >= self.beam_reload:
                 self.guns_ready = True
+
+    def death(self):
+        if self.health <= 0:
+            self.kill()
     
 
 class Enemy(pygame.sprite.Sprite):
@@ -78,7 +85,7 @@ class EnemyGroup:
     X_OFFSET = 50
     Y_OFFSET = 75
     ROWS = 3
-    COLUMNS = 8
+    COLUMNS = 7
 
     def __init__(self, SETTINGS):
         self.SETTINGS = SETTINGS

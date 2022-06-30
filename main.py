@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from random import randint
 
 import pygame
 
