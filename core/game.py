@@ -117,14 +117,13 @@ class Game:
             self.player.update()
         else:
             self.player.sprite.explode()
-
         self.player.draw(self.screen)
         self.player.sprite.missiles.draw(self.screen)
 
         #  Обновление специального противника
-        # self.extra_enemy_appearance()
         if self.extra_enemy:
             self.extra_enemy.update()
+            # Случай, когда после апдейта Extra Enemy уже удален
             if self.extra_enemy:
                 self.extra_enemy.sprite.beam.draw(self.screen)
                 self.extra_enemy.draw(self.screen)
