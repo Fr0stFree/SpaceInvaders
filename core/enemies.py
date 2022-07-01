@@ -24,18 +24,18 @@ class ExtraEnemy(pygame.sprite.Sprite):
         ]))
         self.health = self.HEALTH
         self.speed = self.SPEED 
-        
         self.guns_ready = False
         self.recoil_time = 0
         self.beam_reload = self.BEAM_RECOIL_TIME
         self.beam = pygame.sprite.GroupSingle()
 
     def update(self):
-        self.beam.update()
-        self.gunfire()
-        self.movement()
-        self.recoil()
-        self.death()
+        if self.alive:
+            self.beam.update()
+            self.gunfire()
+            self.movement()
+            self.recoil()
+
 
     def movement(self):
         self.rect.x += self.speed
@@ -58,10 +58,11 @@ class ExtraEnemy(pygame.sprite.Sprite):
             current_time = pygame.time.get_ticks()
             if current_time - self.recoil_time >= self.beam_reload:
                 self.guns_ready = True
+    
+    @property
+    def alive(self):
+        return self.health > 0
 
-    def death(self):
-        if self.health <= 0:
-            self.kill()
     
 
 class Enemy(pygame.sprite.Sprite):

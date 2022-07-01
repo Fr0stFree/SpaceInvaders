@@ -19,17 +19,18 @@ def initialize():
     
     pygame.init()
     screen = pygame.display.set_mode((SETTINGS['WIDTH'], SETTINGS['HEIGHT']))
-    menu = Menu(screen, SETTINGS=SETTINGS)
+    menu = Menu(screen, SETTINGS=SETTINGS, message='')
     procedure = menu
 
     clock = pygame.time.Clock()
 
-    soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
-    soundtrack.play(loops=-1)
-    soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
 
 if __name__ == '__main__':
     initialize()
+
+    soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
+    soundtrack.play(loops=-1)
+    soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
 
     while True:
         procedure.run()
@@ -44,7 +45,11 @@ if __name__ == '__main__':
                     game.enemies.gunfire()
                 
                 if not game.player.sprite.alive:
-                    menu = Menu(screen, SETTINGS, game.score)
+                    menu = Menu(screen, SETTINGS, message=f'You have lost! Your score:{game.score}')
+                    procedure = menu
+
+                elif game.extra_enemy and not game.extra_enemy.sprite.alive:
+                    menu = Menu(screen, SETTINGS, message=f'You have won! Your score:{game.score}')
                     procedure = menu
 
             elif str(procedure) == 'menu':

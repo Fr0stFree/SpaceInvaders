@@ -74,7 +74,7 @@ class Game:
                     self.explosions.add(explosion)
                     missile.sound_effect.stop()
                     missile.kill()
-                    self.score += 5
+                    self.score += 1
 
         # Коллизии лазеров противника
         lasers = self.enemies.lasers

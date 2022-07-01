@@ -67,12 +67,12 @@ class Menu:
     FONT_SIZE = 36
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
-    def __init__(self, screen, SETTINGS, score=0):
+    def __init__(self, screen, SETTINGS, message):
         self.SETTINGS = SETTINGS
+        self.message = message
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.screen = screen
-        self.score = score
         self.button_run = Button(text='RUN', position=(0.5*self.SETTINGS['WIDTH'], 0.35*self.SETTINGS['HEIGHT']), screen=screen)
         self.button_exit = Button(text='EXIT', position=(0.5*self.SETTINGS['WIDTH'], 0.65*self.SETTINGS['HEIGHT']), screen=screen)
         self.button_settings = Button(text='SETTINGS', position=(0.5*self.SETTINGS['WIDTH'], 0.5*self.SETTINGS['HEIGHT']), screen=screen)
@@ -85,8 +85,7 @@ class Menu:
         self.button_run.draw()
         self.button_settings.draw()
         self.button_exit.draw()
-        if self.score:
-            self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
-            score_surf = self.text_font.render(f'your score: {self.score}', False, self.FONT_COLOR)
-            score_rect = score_surf.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.15*self.SETTINGS['HEIGHT']))
-            self.screen.blit(score_surf, score_rect)
+        self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
+        message_surf = self.text_font.render(self.message, False, self.FONT_COLOR)
+        message_rect = message_surf.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.15*self.SETTINGS['HEIGHT']))
+        self.screen.blit(message_surf, message_rect)
