@@ -45,11 +45,13 @@ if __name__ == '__main__':
                     game.enemies.gunfire()
                 
                 if not game.player.sprite.alive:
-                    menu = Menu(screen, SETTINGS, message=f'You have lost! Your score:{game.score}')
+                    message = f'You have lost! Your score: {game.score}'
+                    menu = Menu(screen, SETTINGS, message)
                     procedure = menu
 
                 elif game.extra_enemy and not game.extra_enemy.sprite.alive:
-                    menu = Menu(screen, SETTINGS, message=f'You have won! Your score:{game.score}')
+                    message = f'You have won! Your score: {game.score}'
+                    menu = Menu(screen, SETTINGS, message)
                     procedure = menu
 
             elif str(procedure) == 'menu':
