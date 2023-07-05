@@ -21,4 +21,6 @@ pip install pygame
 ```
 python main.py
 ```
-![alt text](https://github.com/Fr0stFree/Space-Invaders/blob/main/screenshot.jpg?raw=true)
+![menu screenshot](public/menu.png)
+
+![game screenshot](public/screenshot.jpg)

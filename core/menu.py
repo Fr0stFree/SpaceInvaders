@@ -1,7 +1,8 @@
 import os
-import json
 
 import pygame
+
+from .settings import Settings
 
 
 class Button(pygame.sprite.Sprite):
@@ -62,20 +63,20 @@ class Button(pygame.sprite.Sprite):
                 if self.pressed:
                     return True
 
+
 class Menu:
     FONT_COLOR = (150, 150, 150)
     FONT_SIZE = 36
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
 
-    def __init__(self, screen, SETTINGS, message):
-        self.SETTINGS = SETTINGS
+    def __init__(self, screen, message):
         self.message = message
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
         self.screen = screen
-        self.button_run = Button(text='RUN', position=(0.5*self.SETTINGS['WIDTH'], 0.35*self.SETTINGS['HEIGHT']), screen=screen)
-        self.button_exit = Button(text='EXIT', position=(0.5*self.SETTINGS['WIDTH'], 0.65*self.SETTINGS['HEIGHT']), screen=screen)
-        self.button_settings = Button(text='SETTINGS', position=(0.5*self.SETTINGS['WIDTH'], 0.5*self.SETTINGS['HEIGHT']), screen=screen)
+        self.button_run = Button(text='RUN', position=(0.5*Settings.WIDTH, 0.35*Settings.HEIGHT), screen=screen)
+        self.button_exit = Button(text='EXIT', position=(0.5*Settings.WIDTH, 0.65*Settings.HEIGHT), screen=screen)
+        self.button_settings = Button(text='SETTINGS', position=(0.5*Settings.WIDTH, 0.5*Settings.HEIGHT), screen=screen)
     
     def __str__(self):
         return 'menu'
@@ -87,5 +88,5 @@ class Menu:
         self.button_exit.draw()
         self.text_font = pygame.font.Font(os.path.join('graphics', 'Pixeltype.ttf'), self.FONT_SIZE)
         message_surf = self.text_font.render(self.message, False, self.FONT_COLOR)
-        message_rect = message_surf.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.15*self.SETTINGS['HEIGHT']))
+        message_rect = message_surf.get_rect(center=(0.5*Settings.WIDTH, 0.15*Settings.HEIGHT))
         self.screen.blit(message_surf, message_rect)

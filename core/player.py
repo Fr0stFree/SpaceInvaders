@@ -1,8 +1,8 @@
 import pygame
 import os
-import json
 
 from .weapons import Missile
+from .settings import Settings
 
 
 class Player(pygame.sprite.Sprite):
@@ -18,13 +18,12 @@ class Player(pygame.sprite.Sprite):
     EXPLOSION_COLUMNS = 8
     EXPLOSION_ROWS = 6
 
-    def __init__(self, SETTINGS):
+    def __init__(self):
         super().__init__()
-        self.SETTINGS = SETTINGS
         self.frames = [pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)]
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
-        self.rect = self.image.get_rect(center=(0.5*self.SETTINGS['WIDTH'], 0.9*self.SETTINGS['HEIGHT']))
+        self.rect = self.image.get_rect(center=(0.5*Settings.WIDTH, 0.9*Settings.HEIGHT))
         self.health = self.START_HEALTH
         self.alive = True
         self.speed = self.SPEED
@@ -75,17 +74,17 @@ class Player(pygame.sprite.Sprite):
                 self.guns_ready = True
 
     def gunfire(self):
-        self.missiles.add(Missile(position=self.rect.center, settings=self.SETTINGS))
+        self.missiles.add(Missile(position=self.rect.center))
 
     def constraint(self):
-        if self.rect.right >= self.SETTINGS['WIDTH']:
-            self.rect.right = self.SETTINGS['WIDTH']
+        if self.rect.right >= Settings.WIDTH:
+            self.rect.right = Settings.WIDTH
         if self.rect.left <= 0:
             self.rect.left = 0
-        if self.rect.top <= self.SETTINGS['HEIGHT'] // 2:
-            self.rect.top = self.SETTINGS['HEIGHT'] // 2
-        if self.rect.bottom >= self.SETTINGS['HEIGHT']:
-            self.rect.bottom = self.SETTINGS['HEIGHT']
+        if self.rect.top <= Settings.HEIGHT // 2:
+            self.rect.top = Settings.HEIGHT // 2
+        if self.rect.bottom >= Settings.HEIGHT:
+            self.rect.bottom = Settings.HEIGHT
 
     def update(self):
         self.get_input()

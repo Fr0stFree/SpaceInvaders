@@ -1,10 +1,10 @@
 import os
 from random import choice
-import json
 
 import pygame
 
 from .weapons import Projectile, Beam
+from .settings import Settings
 
 
 class ExtraEnemy(pygame.sprite.Sprite):
@@ -14,13 +14,12 @@ class ExtraEnemy(pygame.sprite.Sprite):
     BEAM_RECOIL_TIME = 3500
     HEALTH = 5
 
-    def __init__(self, SETTINGS):
+    def __init__(self):
         super().__init__()
-        self.SETTINGS = SETTINGS
         self.image = pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)
         self.rect = self.image.get_rect(center=choice([
-            (-0.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
-            (1.05*self.SETTINGS['WIDTH'], 0.05*self.SETTINGS['HEIGHT']),
+            (-0.05*Settings.WIDTH, 0.05*Settings.HEIGHT),
+            (1.05*Settings.WIDTH, 0.05*Settings.HEIGHT),
         ]))
         self.health = self.HEALTH
         self.speed = self.SPEED 
@@ -39,17 +38,12 @@ class ExtraEnemy(pygame.sprite.Sprite):
 
     def movement(self):
         self.rect.x += self.speed
-        if self.rect.right > 1.1*self.SETTINGS['WIDTH'] or self.rect.left < -self.SETTINGS['WIDTH']//10:
+        if self.rect.right > 1.1*Settings.WIDTH or self.rect.left < -Settings.WIDTH//10:
             self.speed *= -1
 
     def gunfire(self):
         if self.guns_ready:
-            self.beam.add(
-                Beam(
-                    position=(self.rect.centerx, self.rect.centery+400),
-                    speed=self.speed,
-                )
-            )
+            self.beam.add(Beam(position=(self.rect.centerx, self.rect.centery+400), speed=self.speed))
             self.guns_ready = False
             self.recoil_time = pygame.time.get_ticks()
     
@@ -88,8 +82,7 @@ class EnemyGroup:
     ROWS = 3
     COLUMNS = 7
 
-    def __init__(self, SETTINGS):
-        self.SETTINGS = SETTINGS
+    def __init__(self):
         self.sprites = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
 
@@ -108,12 +101,12 @@ class EnemyGroup:
             if enemy.rect.left <= 0:
                 for enemy in self.sprites:
                     enemy.xspeed = 1
-            if enemy.rect.right >= self.SETTINGS['WIDTH']:
+            if enemy.rect.right >= Settings.WIDTH:
                 for enemy in self.sprites:
                     enemy.xspeed = -1
 
     def gunfire(self):
         if self.sprites:
             random_enemy = choice(list(self.sprites))
-            laser_sprite = Projectile(position=random_enemy.rect.center, SETTINGS=self.SETTINGS)
+            laser_sprite = Projectile(position=random_enemy.rect.center)
             self.lasers.add(laser_sprite)

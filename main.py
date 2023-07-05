@@ -1,74 +1,54 @@
 import sys
-import os
-import json
-from random import randint
+from typing import Union
 
 import pygame
 
 from core.game import Game
 from core.menu import Menu
 from core.settings import Settings
+from core.utils import play_music
 
-
-
-def initialize():
-    global SETTINGS, screen, procedure, clock, menu
-
-    with open('settings.json', 'r') as data:
-        SETTINGS = json.load(data)
-    
-    pygame.init()
-    screen = pygame.display.set_mode((SETTINGS['WIDTH'], SETTINGS['HEIGHT']))
-    menu = Menu(screen, SETTINGS=SETTINGS, message='')
-    procedure = menu
-
-    clock = pygame.time.Clock()
+GameStates = Union[Game, Menu]
 
 
 if __name__ == '__main__':
-    initialize()
+    pygame.init()
 
-    soundtrack = pygame.mixer.Sound(os.path.join('audio', 'Noisia_dustup.mp3'))
-    soundtrack.play(loops=-1)
-    soundtrack.set_volume(SETTINGS['SOUNDTRACK_VOLUME'])
+    screen = pygame.display.set_mode((Settings.WIDTH, Settings.HEIGHT))
+    menu = Menu(screen, message='')
+    state: GameStates = menu
+    clock = pygame.time.Clock()
+    play_music()
 
     while True:
-        procedure.run()
+        state.run()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if str(procedure) == 'game':
-                if event.type == game.ENEMY_GUNFIRE_EVENT:
-                    game.enemies.gunfire()
-                
-                if not game.player.sprite.alive:
-                    message = f'You have lost! Your score: {game.score}'
-                    menu = Menu(screen, SETTINGS, message)
-                    procedure = menu
+            if isinstance(state, Game):
+                if event.type == state.ENEMY_GUNFIRE_EVENT:
+                    state.enemies.gunfire()
 
-                elif game.extra_enemy and not game.extra_enemy.sprite.alive:
-                    message = f'You have won! Your score: {game.score}'
-                    menu = Menu(screen, SETTINGS, message)
-                    procedure = menu
+                if not state.player.sprite.alive:
+                    message = f'You have lost! Your score: {state.score}'
+                    menu = Menu(screen, message)
+                    state = menu
 
-            elif str(procedure) == 'menu':
-                if menu.button_exit.click():
+                elif state.extra_enemy and not state.extra_enemy.sprite.alive:
+                    message = f'You have won! Your score: {state.score}'
+                    menu = Menu(screen, message)
+                    state = menu
+
+            elif isinstance(state, Menu):
+                if state.button_exit.click():
                     pygame.quit()
                     sys.exit()
 
-                if menu.button_run.click():
-                    initialize()
-                    game = Game(screen, SETTINGS)
-                    procedure = game
-
-                if menu.button_settings.click():
-                    pygame.quit()
-                    settings = Settings(SETTINGS)
-                    if settings.open():
-                        initialize()
+                if state.button_run.click():
+                    state = Game(screen)
 
         pygame.display.flip()
-        clock.tick(SETTINGS['FPS'])
+        clock.tick(Settings.FPS)

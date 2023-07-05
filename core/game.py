@@ -1,11 +1,11 @@
 import os
-import json
 
 import pygame
 
 from .player import Player
 from .weapons import Explosion
 from .enemies import ExtraEnemy, EnemyGroup
+from .settings import Settings
 
 
 class Game:
@@ -15,18 +15,17 @@ class Game:
     FONT_SIZE = 26
     FONT_COLOR = (255, 255, 255)
 
-    def __init__(self, screen, SETTINGS):
-        self.SETTINGS = SETTINGS
+    def __init__(self, screen):
         self.screen = screen
         self.background_surf = self.BACKGROUND_IMAGE.convert_alpha()
         self.background_rect = self.background_surf.get_rect(topleft=(0, 0))
 
-        self.player = pygame.sprite.GroupSingle(Player(self.SETTINGS))
+        self.player = pygame.sprite.GroupSingle(Player())
         self.live_surf = pygame.transform.scale(self.HEALTH_IMAGE.convert_alpha(), self.HEALTH_SIZE)
 
         self.extra_enemy = pygame.sprite.GroupSingle()
 
-        self.enemies = EnemyGroup(SETTINGS)
+        self.enemies = EnemyGroup()
         self.enemies.setup()
 
         self.explosions = pygame.sprite.Group()
@@ -46,12 +45,12 @@ class Game:
 
     def display_lives(self):
         for live in range(self.player.sprite.health-1):
-            position = (self.SETTINGS['WIDTH'] - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
+            position = (Settings.WIDTH - (self.HEALTH_SIZE[1] * 2 + 25) + (live * (self.HEALTH_SIZE[1]+10)), 10)
             self.screen.blit(self.live_surf, position)
     
     def display_score(self):
         score_surf = self.font.render(f'score: {self.score}', False, self.FONT_COLOR)
-        score_rect = score_surf.get_rect(topleft=(0.05*self.SETTINGS['WIDTH'], 0.95*self.SETTINGS['HEIGHT']))
+        score_rect = score_surf.get_rect(topleft=(0.05*Settings.WIDTH, 0.95*Settings.HEIGHT))
         self.screen.blit(score_surf, score_rect)
 
     def projectile_collisions_system(self):
@@ -136,7 +135,7 @@ class Game:
             self.enemies.lasers.update()
             self.enemies.lasers.draw(self.screen)
         elif not self.extra_enemy:
-            self.extra_enemy.add(ExtraEnemy(self.SETTINGS))
+            self.extra_enemy.add(ExtraEnemy())
 
         #  Отображение взрывов
         if self.explosions:

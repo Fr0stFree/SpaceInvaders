@@ -1,6 +1,7 @@
 import os
 import pygame
-import json
+
+from .settings import Settings
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -10,9 +11,8 @@ class Projectile(pygame.sprite.Sprite):
     IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'enemy_laser.png'))
     LAUNCH_VOLUME = 0.03
 
-    def __init__(self, position, SETTINGS):
+    def __init__(self, position):
         super().__init__()
-        self.SETTINGS = SETTINGS
         self.image = pygame.transform.scale(self.IMAGE_PATH.convert_alpha(), self.SIZE)
         self.rect = self.image.get_rect(center=position)
         self.speed = self.SPEED
@@ -21,13 +21,14 @@ class Projectile(pygame.sprite.Sprite):
         self.sound_effect.play().set_volume(self.LAUNCH_VOLUME)
     
     def destroy_sprite(self):
-        if self.rect.y > self.SETTINGS['HEIGHT'] or self.rect.y < 0:
+        if self.rect.y > Settings.HEIGHT or self.rect.y < 0:
             self.kill()
 
     def update(self):
         self.destroy_sprite()
         self.speed += self.acceleration
         self.rect.y -= self.speed
+
 
 class Missile(pygame.sprite.Sprite):
     ANIMATION_SPEED = 0.5
@@ -37,9 +38,8 @@ class Missile(pygame.sprite.Sprite):
     ACCELERATION = 0.15
     MISSILE_LAUNCH_VOLUME = 0.06
 
-    def __init__(self, position, settings):
+    def __init__(self, position):
         super().__init__()
-        self.SETTINGS = settings
         self.frames = []
         for i in range(self.NUMBER_OF_FRAMES):
             missile = pygame.image.load(os.path.join('graphics', 'Missile', f'Missile_3_Flying_00{i}.png')).convert_alpha()
@@ -53,7 +53,7 @@ class Missile(pygame.sprite.Sprite):
 
 
     def destroy_sprite(self):
-        if self.rect.y > self.SETTINGS['HEIGHT'] or self.rect.y < 0:
+        if self.rect.y > Settings.HEIGHT or self.rect.y < 0:
             self.kill()
 
     def update(self):
