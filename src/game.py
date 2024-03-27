@@ -2,15 +2,16 @@ import os
 
 import pygame
 
-from .player import Player
-from .weapons import Explosion
-from .enemies import ExtraEnemy, EnemyGroup
-from .settings import Settings
+from src.units.player.sprite import Player
+from src.units.player.weapon import Explosion
+from src.units.boss.sprite import ExtraEnemy
+from src.units.enemy.sprite import EnemyGroup
+from src.settings import Settings
 
 
 class Game:
     BACKGROUND_IMAGE = pygame.image.load(os.path.join('graphics', 'background.jpg'))
-    HEALTH_IMAGE = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
+    HEALTH_IMAGE = pygame.image.load(os.path.join(os.path.dirname(__file__), 'units', 'player', 'graphics', 'player_ship.png'))
     HEALTH_SIZE = (31, 29)
     FONT_SIZE = 26
     FONT_COLOR = (255, 255, 255)

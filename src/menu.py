@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-from .settings import Settings
+from src.settings import Settings
 
 
 class Button(pygame.sprite.Sprite):

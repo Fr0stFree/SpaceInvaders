@@ -1,17 +1,17 @@
 import pygame
 import os
 
-from .weapons import Missile
-from .settings import Settings
+from src.units.player.weapon import Missile
+from src.settings import Settings
 
 
 class Player(pygame.sprite.Sprite):
     START_HEALTH = 3
     RECOIL_COOLDOWN = 2000
     SPEED = 3
-    SIZE = (52,48)
-    IMAGE_PATH = pygame.image.load(os.path.join('graphics', 'player_ship.png'))
-    EXPLOSIONS_IMAGE = pygame.image.load(os.path.join('graphics', 'explosion.png'))
+    SIZE = (52, 48)
+    IMAGE_PATH = pygame.image.load(os.path.join(os.path.dirname(__file__), 'graphics', 'player_ship.png'))
+    EXPLOSIONS_IMAGE = pygame.image.load(os.path.join(os.path.dirname(__file__), 'graphics', 'Explosion.png'))
     EXPLOSION_VOLUME = 0.25
     EXPLOSION_ANIMATION_SPEED = 0.5
     EXPLOSION_RESOLUTION = (2048, 1536)

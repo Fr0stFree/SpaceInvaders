@@ -3,10 +3,10 @@ from typing import Union
 
 import pygame
 
-from core.game import Game
-from core.menu import Menu
-from core.settings import Settings
-from core.utils import play_music
+from src.game import Game
+from src.menu import Menu
+from src.settings import Settings
+from src import music
 
 GameStates = Union[Game, Menu]
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     menu = Menu(screen, message='')
     state: GameStates = menu
     clock = pygame.time.Clock()
-    play_music()
+    music.play()
 
     while True:
         state.run()
